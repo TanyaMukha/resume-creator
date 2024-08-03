@@ -1,35 +1,43 @@
-import { CompanyType } from "../constants";
+import { CompanyType, ContactType, LanguageLevel } from "../constants";
 
-interface Skill {
+export interface Skill {
   id: number;
   title: string;
+  order?: number,
   unvisible?: boolean;
 }
 
-interface Position {
+export interface Position {
   id: number;
   title: string;
+  salary: number;
+  summary: string;
+  expectation?: string;
   relatedSkills: Skill[];
   unvisible?: boolean;
 }
-
-interface Education {
-  id: number;
-  title: string; // university or course
+export interface Diplom {
   start: string;
   finish: string;
+  degree: string;
   specialization: string;
-  grade: string;
   unvisible?: boolean;
 }
 
-interface Project {
+export interface Education {
+  id: number;
+  university: string; // university or course
+  diploms: Diplom[];
+  unvisible?: boolean;
+}
+
+export interface Project {
   id: number;
   title: string;
   client: string;
   description: string;
   start: string;
-  finish: string;
+  finish?: string;
   roles: string[];
   tasks: string[];
   achievements?: string[];
@@ -37,18 +45,22 @@ interface Project {
   unvisible?: boolean;
 }
 
-interface Experience {
+export interface Experience {
   id: number;
   company?: string;
+  location?: string;
   type?: CompanyType;
   start: string;
-  finish: string;
+  finish?: string;
   position: string;
+  functions?: string[];
+  description?: string;
   projects?: Project[];
+  achievements?: string[];
   unvisible?: boolean;
 }
 
-interface Certificate {
+export interface Certificate {
   id: number;
   title: string;
   year: number;
@@ -56,21 +68,29 @@ interface Certificate {
   unvisible?: boolean;
 }
 
+export interface Language {
+  id: number,
+  title: string,
+  level: LanguageLevel,
+}
+
+export interface Contact {
+  id: number,
+  type: ContactType,
+  title: string,
+  value: string,
+  order?: number,
+  unvisible?: boolean,
+}
+
 export interface ResumeFrontDto {
   id: number;
   firstName: string;
   lastName: string;
-  email: string;
-  github?: string;
-  linkedin?: string;
-  portfolio?: string;
-  phone?: string;
-  skype?: string;
-  telegram?: string;
-  whatsApp?: string;
+  contacts: Contact[],
   age?: number;
+  languages?: Language[],
   positions: Position[];
-  introduction: string;
   expectation?: string;
   education: Education[];
   experience: Experience[];

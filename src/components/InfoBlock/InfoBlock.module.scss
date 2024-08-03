@@ -1,0 +1,8 @@
+.container {
+  margin-top: 16px;
+
+  & .title {
+    border-bottom: 2px dotted black;
+    margin-bottom: 4px;
+  }
+}
