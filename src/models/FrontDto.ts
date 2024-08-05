@@ -1,22 +1,22 @@
 import { CompanyType, ContactType, LanguageLevel } from "../constants";
 
-export interface Skill {
+export interface SkillFrontDto {
   id: number;
   title: string;
   order?: number,
   unvisible?: boolean;
 }
 
-export interface Position {
+export interface PositionFrontDto {
   id: number;
   title: string;
   salary: number;
   summary: string;
   expectation?: string;
-  relatedSkills: Skill[];
+  relatedSkills: SkillFrontDto[];
   unvisible?: boolean;
 }
-export interface Diplom {
+export interface DiplomFrontDto {
   start: string;
   finish: string;
   degree: string;
@@ -24,14 +24,20 @@ export interface Diplom {
   unvisible?: boolean;
 }
 
-export interface Education {
+export interface EducationFrontDto {
   id: number;
-  university: string; // university or course
-  diploms: Diplom[];
+  university: string;
+  diploms: DiplomFrontDto[];
   unvisible?: boolean;
 }
 
-export interface Project {
+export interface TaskFrontDto {
+  id: number;
+  description: string;
+  unvisible?: boolean;
+}
+
+export interface ProjectFrontDto {
   id: number;
   title: string;
   client: string;
@@ -39,13 +45,13 @@ export interface Project {
   start: string;
   finish?: string;
   roles: string[];
-  tasks: string[];
+  tasks: TaskFrontDto[];
   achievements?: string[];
-  skills: Skill[];
+  skills: SkillFrontDto[];
   unvisible?: boolean;
 }
 
-export interface Experience {
+export interface ExperienceFrontDto {
   id: number;
   company?: string;
   location?: string;
@@ -55,12 +61,12 @@ export interface Experience {
   position: string;
   functions?: string[];
   description?: string;
-  projects?: Project[];
-  achievements?: string[];
+  projects?: ProjectFrontDto[];
+  tasks?: TaskFrontDto[];
   unvisible?: boolean;
 }
 
-export interface Certificate {
+export interface CertificateFrontDto {
   id: number;
   title: string;
   year: number;
@@ -68,13 +74,14 @@ export interface Certificate {
   unvisible?: boolean;
 }
 
-export interface Language {
+export interface LanguageFrontDto {
   id: number,
   title: string,
   level: LanguageLevel,
+  unvisible?: boolean;
 }
 
-export interface Contact {
+export interface ContactFrontDto {
   id: number,
   type: ContactType,
   title: string,
@@ -87,13 +94,13 @@ export interface ResumeFrontDto {
   id: number;
   firstName: string;
   lastName: string;
-  contacts: Contact[],
+  contacts: ContactFrontDto[],
   age?: number;
-  languages?: Language[],
-  positions: Position[];
+  languages?: LanguageFrontDto[],
+  positions: PositionFrontDto[];
   expectation?: string;
-  education: Education[];
-  experience: Experience[];
-  certificates?: Certificate[];
+  education: EducationFrontDto[];
+  experience: ExperienceFrontDto[];
+  certificates?: CertificateFrontDto[];
   unvisible?: boolean;
 }

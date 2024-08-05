@@ -5,10 +5,10 @@ import gitHubIcon from "../../assets/github.svg";
 import { ContactType } from "../../constants";
 import PlaceIcon from "@mui/icons-material/Place";
 import gitLinkedIn from "../../assets/linkedin.svg";
-import { Contact } from "../../models/FrontDto";
+import { ContactFrontDto } from "../../models/FrontDto";
 
 interface ContactElementProps {
-  item: Contact;
+  item: ContactFrontDto;
 }
 
 export default function ContactElement(props: ContactElementProps) {
@@ -45,7 +45,7 @@ const icons = [
   },
 ];
 
-const getLink = (item: Contact) => {
+const getLink = (item: ContactFrontDto) => {
   switch (item.type) {
     case ContactType.Email:
       return <Link href={`mailto:${item.value}`} underline="hover">{item.title}</Link>;

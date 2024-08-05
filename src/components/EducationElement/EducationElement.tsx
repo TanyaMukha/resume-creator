@@ -1,8 +1,8 @@
 import { Stack, Typography } from "@mui/material";
-import { Education } from "../../models/FrontDto";
+import { EducationFrontDto } from "../../models/FrontDto";
 
 interface EducationElementProps {
-  item: Education;
+  item: EducationFrontDto;
 }
 
 export default function EducationElement(props: EducationElementProps) {

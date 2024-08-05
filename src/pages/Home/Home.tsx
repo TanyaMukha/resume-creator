@@ -30,34 +30,34 @@ export default function Home() {
             </InfoBlock>
           )}
           <InfoBlock title="Experience">
-            {person.experience.map((i) => (
-              <ExperienceElement item={i} />
+            {person.experience.map((item, index) => (
+              <ExperienceElement item={item} key={index}/>
             ))}
           </InfoBlock>
         </Stack>
         <Stack>
           <InfoBlock title="Contacts">
-            {person.contacts.map((i) => (
-              <ContactElement item={i} />
+            {person.contacts.map((item, index) => (
+              <ContactElement item={item} key={index}/>
             ))}
           </InfoBlock>
           <InfoBlock title="Skills">
-            {person.positions[0]?.relatedSkills.map((i) => (
-              <div>{i.title}</div>
+            {person.positions[0]?.relatedSkills.map((item, index) => (
+              <div key={index}>{item.title}</div>
             ))}
           </InfoBlock>
           <InfoBlock title="Languages">
-            {person.languages?.map((i) => (
-              <div>
-                <b>{i.title}</b>: {i.level}{" "}
-                {i.level != LanguageLevel.Native &&
-                  `(${getEnumKeyByValue(LanguageLevel, i.level)})`}
+            {person.languages?.map((item, index) => (
+              <div key={index}>
+                <b>{item.title}</b>: {item.level}{" "}
+                {item.level != LanguageLevel.Native &&
+                  `(${getEnumKeyByValue(LanguageLevel, item.level)})`}
               </div>
             ))}
           </InfoBlock>
           <InfoBlock title="Education">
-            {person.education.map((i) => (
-              <EducationElement item={i} />
+            {person.education.map((item, index) => (
+              <EducationElement item={item} key={index}/>
             ))}
           </InfoBlock>
         </Stack>

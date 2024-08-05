@@ -1,0 +1,6 @@
+CREATE TABLE Skill (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    "order" INTEGER,
+    unvisible BOOLEAN
+);
