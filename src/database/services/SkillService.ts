@@ -8,7 +8,7 @@ import {
 } from "../helpers/getScript";
 
 export class SkillService {
-  private static selectQuery = (position_id: number) =>
+  private static selectPositionSkillsQuery = (position_id: number) =>
     getSelectRecordsUseRelatedTableScript(
       "Skill",
       "PositionSkill",
@@ -16,6 +16,16 @@ export class SkillService {
       "skill_id",
       "position_id",
       position_id
+    );
+
+  private static selectProjectSkillsQuery = (project_id: number) =>
+    getSelectRecordsUseRelatedTableScript(
+      "Skill",
+      "ProjectSkill",
+      "id",
+      "skill_id",
+      "project_id",
+      project_id
     );
 
   private static selectLastRecordQuery = () =>
@@ -28,7 +38,19 @@ export class SkillService {
     position_id: number
   ): Promise<SkillDto[]> {
     const db = await SQLite.open(databaseOptions.db);
-    const skills = await db.select<SkillDto[]>(this.selectQuery(position_id));
+    const skills = await db.select<SkillDto[]>(
+      this.selectPositionSkillsQuery(position_id)
+    );
+    return skills;
+  }
+
+  public static async getProjectSkills(
+    project_id: number
+  ): Promise<SkillDto[]> {
+    const db = await SQLite.open(databaseOptions.db);
+    const skills = await db.select<SkillDto[]>(
+      this.selectProjectSkillsQuery(project_id)
+    );
     return skills;
   }
 

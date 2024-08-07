@@ -14,13 +14,6 @@ export interface SkillDto {
   unvisible?: boolean;
 }
 
-export interface RoleDto {
-  id: number;
-  title: string;
-  order?: number;
-  unvisible?: boolean;
-}
-
 export interface PositionDto {
   id: number;
   title: string;
@@ -50,6 +43,26 @@ export interface EducationDto {
   diploms: DiplomDto[];
 }
 
+export interface RoleDto {
+  id: number;
+  title: string;
+  order?: number;
+  unvisible?: boolean;
+}
+
+export interface ProjectTaskDto {
+  id: number,
+  description: string,
+  unvisible?: boolean,
+  project_id: number;
+}
+
+export interface ProjectAchievementDto {
+  id: number,
+  project_id: number;
+  achievement: string;
+}
+
 export interface ProjectDto {
   id: number;
   title: string;
@@ -63,6 +76,19 @@ export interface ProjectDto {
   tasks: ProjectTaskDto[];
   achievements?: ProjectAchievementDto[];
   skills: SkillDto[];
+}
+
+export interface ExperienceAchievementDto {
+  id: number,
+  experience_id: number;
+  achievement: string;
+}
+
+export interface ExperienceTaskDto {
+  id: number,
+  description: string,
+  unvisible?: boolean,
+  experience_id: number;
 }
 
 export interface ExperienceDto {
@@ -119,45 +145,4 @@ export interface ResumeDto {
   education: EducationDto[];
   experience: ExperienceDto[];
   certificates?: CertificateDto[];
-}
-
-// export interface PositionSkillDto {
-//   position_id: number;
-//   skill_id: number;
-// }
-
-// export interface ProjectRoleDto {
-//   project_id: number;
-//   role_id: number;
-// }
-
-export interface ProjectTaskDto {
-  id: number,
-  description: string,
-  unvisible?: boolean,
-  project_id: number;
-}
-
-export interface ProjectAchievementDto {
-  id: number,
-  project_id: number;
-  achievement: string;
-}
-
-export interface ExperienceAchievementDto {
-  id: number,
-  experience_id: number;
-  achievement: string;
-}
-
-// export interface ProjectSkillDto {
-//   project_id: number;
-//   skill_id: number;
-// }
-
-export interface ExperienceTaskDto {
-  id: number,
-  description: string,
-  unvisible?: boolean,
-  experience_id: number;
 }

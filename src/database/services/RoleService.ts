@@ -24,7 +24,7 @@ export class RoleService {
   private static insertOrUpdateQuery = (role: RoleDto) =>
     getInsertOrUpdateRecordScript("Role", role);
 
-  public static async getResumeRoles(project_id: number): Promise<RoleDto[]> {
+  public static async getProjectRoles(project_id: number): Promise<RoleDto[]> {
     const db = await SQLite.open(databaseOptions.db);
     const roles = await db.select<RoleDto[]>(this.selectQuery(project_id));
     return roles;

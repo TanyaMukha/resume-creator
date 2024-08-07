@@ -6,6 +6,7 @@ import {
   getSelectLastRecordScript,
   getSelectRecordsByIdScript,
 } from "../helpers/getScript";
+import { SkillService } from "./SkillService";
 
 export class PositionService {
   private static selectQuery = (resume_id: number) =>
@@ -24,6 +25,9 @@ export class PositionService {
     const positions = await db.select<PositionDto[]>(
       this.selectQuery(resume_id)
     );
+    positions.forEach(async (item) => {
+      item.skills = await SkillService.getPositionSkills(item.id);
+    });
     return positions;
   }
 

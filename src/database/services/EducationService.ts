@@ -6,6 +6,7 @@ import {
   getSelectLastRecordScript,
   getSelectRecordsByIdScript,
 } from "../helpers/getScript";
+import { DiplomService } from "./DiplomService";
 
 export class EducationService {
   private static selectQuery = (resume_id: number) =>
@@ -24,6 +25,9 @@ export class EducationService {
     const education = await db.select<EducationDto[]>(
       this.selectQuery(resume_id)
     );
+    education.forEach(async item => {
+      item.diploms = await DiplomService.getEducationDiploms(item.id);
+    })
     return education;
   }
 
