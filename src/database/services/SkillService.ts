@@ -1,40 +1,41 @@
 import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
 import { SkillDto } from "../models/Dto";
-import { getQueryStringValue } from "../../helpers/getQueryStringValue";
-import { SkillFrontDto } from "../../models/FrontDto";
+import {
+  getInsertOrUpdateRecordScript,
+  getSelectLastRecordScript,
+  getSelectRecordsUseRelatedTableScript,
+} from "../helpers/getScript";
 
-export class MigrationService {
+export class SkillService {
+  private static selectQuery = (position_id: number) =>
+    getSelectRecordsUseRelatedTableScript(
+      "Skill",
+      "PositionSkill",
+      "id",
+      "skill_id",
+      "position_id",
+      position_id
+    );
+
+  private static selectLastRecordQuery = () =>
+    getSelectLastRecordScript("Skill");
+
+  private static insertOrUpdateQuery = (skill: SkillDto) =>
+    getInsertOrUpdateRecordScript("Skill", skill);
+
   public static async getPositionSkills(
-    positionId: number
+    position_id: number
   ): Promise<SkillDto[]> {
     const db = await SQLite.open(databaseOptions.db);
-    const positionSkills = await db.select<SkillDto[]>(
-      `SELECT Skill.* FROM Skill INNER JOIN PositionSkill ON Skill.id = PositionSkill.position_id WHERE PositionSkill.position_id = ${positionId}`
-    );
-    return positionSkills;
+    const skills = await db.select<SkillDto[]>(this.selectQuery(position_id));
+    return skills;
   }
 
-  public static async addSkill(skill: SkillFrontDto): Promise<SkillDto> {
+  public static async setSkill(skill: SkillDto): Promise<SkillDto> {
     const db = await SQLite.open(databaseOptions.db);
-    await (!skill.id
-      ? db.execute(
-          "INSERT INTO Skill (title, order, unvisible) VALUES (?1', ?2', ?3)",
-          [getQueryStringValue(skill.title), skill.order, skill.unvisible]
-        )
-      : db.execute(
-          "UPDATE Skill SET title = ?1, order = ?2, unvisible = ?3 WHERE id = ?4",
-          [
-            getQueryStringValue(skill.title),
-            skill.order,
-            skill.unvisible,
-            skill.id,
-          ]
-        ));
-    const res_skill = await db.select<SkillDto>(
-      "SELECT * FROM Skill ORDER BY id DESC LIMIT 1"
-    );
-    // await db.close();
+    await this.insertOrUpdateQuery(skill);
+    const res_skill = await db.select<SkillDto>(this.selectLastRecordQuery());
     return res_skill;
   }
 }

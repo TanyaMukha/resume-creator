@@ -1,10 +1,20 @@
+import { CompanyType, ContactType, DegreeType, LanguageLevel } from "./enums";
+
 export interface MigrationDto {
   id: number;
   name: string;
+  description?: string;
   executed: string;
 }
 
 export interface SkillDto {
+  id: number;
+  title: string;
+  order?: number;
+  unvisible?: boolean;
+}
+
+export interface RoleDto {
   id: number;
   title: string;
   order?: number;
@@ -18,28 +28,26 @@ export interface PositionDto {
   summary: string;
   expectation?: string;
   unvisible?: boolean;
+  resume_id: number;
+  skills: SkillDto[];
 }
 
 export interface DiplomDto {
   id: number;
-  education_id: number;
   start: string;
   finish: string;
-  degree: string;
+  degree: DegreeType;
   specialization: string;
   unvisible?: boolean;
+  education_id: number;
 }
 
 export interface EducationDto {
   id: number;
   university: string;
   unvisible?: boolean;
-}
-
-export interface TaskDto {
-  id: number;
-  description: string;
-  unvisible?: boolean;
+  resume_id: number;
+  diploms: DiplomDto[];
 }
 
 export interface ProjectDto {
@@ -50,18 +58,27 @@ export interface ProjectDto {
   start: string;
   finish?: string;
   unvisible?: boolean;
+  experience_id: number;
+  roles: RoleDto[];
+  tasks: ProjectTaskDto[];
+  achievements?: ProjectAchievementDto[];
+  skills: SkillDto[];
 }
 
 export interface ExperienceDto {
   id: number;
   company?: string;
   location?: string;
-  type?: string;
+  type?: CompanyType;
   start: string;
   finish?: string;
   position: string;
   description?: string;
   unvisible?: boolean;
+  resume_id: number;
+  achievements?: ExperienceAchievementDto[];
+  projects?: ProjectDto[];
+  tasks?: ExperienceTaskDto[];
 }
 
 export interface CertificateDto {
@@ -70,22 +87,25 @@ export interface CertificateDto {
   year: number;
   link: string;
   unvisible?: boolean;
+  resume_id: number;
 }
 
 export interface LanguageDto {
   id: number;
   title: string;
-  level: string;
+  level: LanguageLevel;
   unvisible?: boolean;
+  resume_id: number;
 }
 
 export interface ContactDto {
   id: number;
-  type: string;
+  type: ContactType;
   title: string;
   value: string;
   order?: number;
   unvisible?: boolean;
+  resume_id: number;
 }
 
 export interface ResumeDto {
@@ -93,71 +113,51 @@ export interface ResumeDto {
   firstName: string;
   lastName: string;
   age?: number;
-  expectation?: string;
-  unvisible?: boolean;
+  contacts: ContactDto[];
+  languages?: LanguageDto[];
+  positions: PositionDto[];
+  education: EducationDto[];
+  experience: ExperienceDto[];
+  certificates?: CertificateDto[];
 }
 
-export interface PositionSkillDto {
-  position_id: number;
-  skill_id: number;
-}
+// export interface PositionSkillDto {
+//   position_id: number;
+//   skill_id: number;
+// }
 
-export interface ProjectRoleDto {
-  project_id: number;
-  role: string;
-}
+// export interface ProjectRoleDto {
+//   project_id: number;
+//   role_id: number;
+// }
 
 export interface ProjectTaskDto {
+  id: number,
+  description: string,
+  unvisible?: boolean,
   project_id: number;
-  task_id: number;
 }
 
 export interface ProjectAchievementDto {
+  id: number,
   project_id: number;
   achievement: string;
 }
 
-export interface ProjectSkillDto {
-  project_id: number;
-  skill_id: number;
+export interface ExperienceAchievementDto {
+  id: number,
+  experience_id: number;
+  achievement: string;
 }
 
-export interface ExperienceProjectDto {
-  experience_id: number;
-  project_id: number;
-}
+// export interface ProjectSkillDto {
+//   project_id: number;
+//   skill_id: number;
+// }
 
 export interface ExperienceTaskDto {
+  id: number,
+  description: string,
+  unvisible?: boolean,
   experience_id: number;
-  task_id: number;
-}
-
-export interface ResumePositionDto {
-  resume_id: number;
-  position_id: number;
-}
-
-export interface ResumeEducationDto {
-  resume_id: number;
-  education_id: number;
-}
-
-export interface ResumeExperienceDto {
-  resume_id: number;
-  experience_id: number;
-}
-
-export interface ResumeCertificateDto {
-  resume_id: number;
-  certificate_id: number;
-}
-
-export interface ResumeLanguageDto {
-  resume_id: number;
-  language_id: number;
-}
-
-export interface ResumeContactDto {
-  resume_id: number;
-  contact_id: number;
 }

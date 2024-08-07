@@ -1,8 +1,8 @@
 import { Stack, Typography } from "@mui/material";
-import { EducationFrontDto } from "../../models/FrontDto";
+import { EducationDto } from "../../database/models/Dto";
 
 interface EducationElementProps {
-  item: EducationFrontDto;
+  item: EducationDto;
 }
 
 export default function EducationElement(props: EducationElementProps) {
@@ -11,9 +11,10 @@ export default function EducationElement(props: EducationElementProps) {
   return (
     <Stack>
       <Typography variant="h3">{item.university}</Typography>
-      {item.diploms.map((i) => (
-        <Typography>
-          {i.start} - {i.finish} <b>{i.degree}</b> degree of {i.specialization}
+      {item.diploms.map((item, index) => (
+        <Typography key={index}>
+          {item.start} - {item.finish} <b>{item.degree}</b> degree of{" "}
+          {item.specialization}
         </Typography>
       ))}
     </Stack>

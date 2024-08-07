@@ -26,3 +26,9 @@ export enum ContactType {
   GitHub = "GitHub",
   Portfolio = "Portfolio",
 }
+
+export enum DegreeType {
+  None = "None",
+  Bachelor = "Bachelor",
+  Master = "Master",
+}

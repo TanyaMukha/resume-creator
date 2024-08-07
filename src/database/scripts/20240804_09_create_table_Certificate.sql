@@ -1,7 +1,0 @@
-CREATE TABLE Certificate (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    year INTEGER NOT NULL,
-    link TEXT NOT NULL,
-    unvisible BOOLEAN
-);

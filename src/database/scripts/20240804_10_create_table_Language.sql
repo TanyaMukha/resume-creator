@@ -1,6 +1,0 @@
-CREATE TABLE Language (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    level TEXT NOT NULL,
-    unvisible BOOLEAN
-);

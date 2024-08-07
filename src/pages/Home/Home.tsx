@@ -1,17 +1,17 @@
 import { Box, Stack, Typography } from "@mui/material";
 import { MY_RESUME } from "../../private/myResume";
-import { ResumeFrontDto } from "../../models/FrontDto";
 import { useState } from "react";
 import InfoBlock from "../../components/InfoBlock/InfoBlock";
 import ContactElement from "../../components/ContactElement/ContactElement";
 import EducationElement from "../../components/EducationElement/EducationElement";
 import ExperienceElement from "../../components/ExperienceElement/ExperienceElement";
-import { LanguageLevel } from "../../constants";
-import { getEnumKeyByValue } from "../../helpers/getEnumKeyByValue";
+import { LanguageLevel } from "../../database/models/enums";
 import styles from "./Home.module.scss";
+import { ResumeDto } from "../../database/models/Dto";
+import { getEnumKeyByValue } from "../../database/helpers/getEnumKeyByValue";
 
 export default function Home() {
-  const [person] = useState<ResumeFrontDto>(MY_RESUME);
+  const [person] = useState<ResumeDto>(MY_RESUME);
   console.log(MY_RESUME);
 
   return (
@@ -42,7 +42,7 @@ export default function Home() {
             ))}
           </InfoBlock>
           <InfoBlock title="Skills">
-            {person.positions[0]?.relatedSkills.map((item, index) => (
+            {person.positions[0]?.skills.map((item, index) => (
               <div key={index}>{item.title}</div>
             ))}
           </InfoBlock>

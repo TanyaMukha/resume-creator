@@ -2,13 +2,13 @@ import { Link, Stack, Typography } from "@mui/material";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import gitHubIcon from "../../assets/github.svg";
-import { ContactType } from "../../constants";
+import { ContactType } from "../../database/models/enums";
 import PlaceIcon from "@mui/icons-material/Place";
-import gitLinkedIn from "../../assets/linkedin.svg";
-import { ContactFrontDto } from "../../models/FrontDto";
+import LinkedInIcon from "../../assets/linkedin.svg";
+import { ContactDto } from "../../database/models/Dto";
 
 interface ContactElementProps {
-  item: ContactFrontDto;
+  item: ContactDto;
 }
 
 export default function ContactElement(props: ContactElementProps) {
@@ -41,11 +41,11 @@ const icons = [
   },
   {
     key: ContactType.LinkedIn,
-    node: <img src={gitLinkedIn} width={24} height={24} />,
+    node: <img src={LinkedInIcon} width={24} height={24} />,
   },
 ];
 
-const getLink = (item: ContactFrontDto) => {
+const getLink = (item: ContactDto) => {
   switch (item.type) {
     case ContactType.Email:
       return <Link href={`mailto:${item.value}`} underline="hover">{item.title}</Link>;
