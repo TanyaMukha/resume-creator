@@ -2,8 +2,8 @@ import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
 import { MigrationDto } from "../models/Dto";
 import { databaseMigrations } from "../migrations/migrations";
-import { getQueryStringValue } from "../helpers/getScript";
-import { interpolateString } from "../helpers/interpolateString";
+import { QueryBuilder } from "../helpers/QueryBuilder";
+import { DataHelper } from "../helpers/DataHelper";
 
 export class MigrationService {
   private static createTableQuery = () => `
@@ -16,9 +16,12 @@ export class MigrationService {
   `;
   private static selectQuery = () => `SELECT name FROM Migration`;
   private static insertQuery = (name: string, description: string = "") =>
-    interpolateString(
+    DataHelper.interpolateString(
       `INSERT INTO Migration (name, description) VALUES ({0}, {1})`,
-      [getQueryStringValue(name), getQueryStringValue(description)]
+      [
+        QueryBuilder.getQueryStringValue(name),
+        QueryBuilder.getQueryStringValue(description),
+      ]
     );
 
   public static async createTable(): Promise<boolean> {
@@ -48,7 +51,12 @@ export class MigrationService {
       ) {
         await db.execute(databaseMigrations[i].sql);
         try {
-          await db.execute(this.insertQuery(databaseMigrations[i].name, databaseMigrations[i].description));
+          await db.execute(
+            this.insertQuery(
+              databaseMigrations[i].name,
+              databaseMigrations[i].description
+            )
+          );
         } catch (e) {
           console.error(e);
         }

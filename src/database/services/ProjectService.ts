@@ -1,25 +1,25 @@
 import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
 import { ProjectDto } from "../models/Dto";
-import {
-  getInsertOrUpdateRecordScript,
-  getSelectLastRecordScript,
-  getSelectRecordsByIdScript,
-} from "../helpers/getScript";
 import { ProjectTaskService } from "./ProjectTaskService";
 import { ProjectAchievementService } from "./ProjectAchievementService";
 import { SkillService } from "./SkillService";
 import { RoleService } from "./RoleService";
+import { QueryBuilder } from "../helpers/QueryBuilder";
 
 export class ProjectService {
   private static selectQuery = (experience_id: number) =>
-    getSelectRecordsByIdScript("Project", "experience_id", experience_id);
+    QueryBuilder.getSelectRecordsByIdScript(
+      "Project",
+      "experience_id",
+      experience_id
+    );
 
   private static selectLastRecordQuery = () =>
-    getSelectLastRecordScript("Project");
+    QueryBuilder.getSelectLastRecordScript("Project");
 
   private static insertOrUpdateQuery = (project: ProjectDto) =>
-    getInsertOrUpdateRecordScript("Project", project);
+    QueryBuilder.getInsertOrUpdateRecordScript("Project", project);
 
   public static async getExperienceProjects(
     experience_id: number

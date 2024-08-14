@@ -1,0 +1,139 @@
+@import "mixins";
+/* style the wrapper component */
+.accordion {
+  box-shadow: none !important;
+  margin: 0 0 16px !important;
+  width: 100%;
+  max-width: 663px;
+  animation-name: blurAnimationOnDOL;
+  animation-duration: 0.4s;
+
+  @media screen and (max-width: 640px) {
+    // margin: auto;
+    margin-bottom: 1px !important;
+  }
+
+  &:before {
+    display: none;
+  }
+}
+
+// .delete {
+//   animation-name: blurAnimationOnDOL2;
+//   animation-duration: 0.4s;
+//   animation-fill-mode: forwards;
+// }
+
+/* style the accordion summary component */
+.summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--primary-color-prune) !important;
+
+  &_icon {
+    padding: 16px;
+  }
+
+  &_root {
+    min-height: 56px !important;
+    max-height: 56px !important;
+    background-color: var(--grey10) !important;
+  }
+
+  & > span:first-child {
+    @include respond-to("mobile") {
+      font-size: 14px;
+      text-align: start;
+    }
+  }
+}
+
+/* style one label and value item */
+.info {
+  text-align: start;
+  margin-bottom: 40px;
+  width: 100%;
+
+  @media (min-width: 639px) {
+    width: 50%;
+    padding-right: 8px;
+  }
+
+  &__fullWidth {
+    width: 100% !important;
+  }
+
+  > span {
+    text-align: start;
+    color: var(--primary-color-prune);
+  }
+
+  > h3 {
+    text-align: start;
+    margin-top: 8px !important;
+    margin-bottom: 0px !important;
+    padding: 0px !important;
+    color: var(--grey60) !important;
+    font-weight: 400 !important;
+    word-wrap: break-word;
+  }
+}
+
+/* style the accordion details */
+.details {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+
+  @include respond-to("mobile") {
+    padding: 0 0 48px !important;
+  }
+  @include respond-to("nomobile") {
+    padding: 0 0 80px !important;
+  }
+}
+
+.buttons {
+  display: flex;
+  gap: 24px;
+}
+
+.deleteButton {
+  color: var(--grey70);
+  margin: 0 4px;
+  width: 16px !important;
+
+  &:hover {
+    color: var(--primary-color-melon);
+  }
+}
+
+.cloneButton {
+  font-size: 19px !important;
+  margin-bottom: 2px;
+  margin-right: 12px;
+  width: 1em !important;
+}
+
+.capitalizeWords {
+  text-transform: uppercase;
+}
+
+@keyframes blurAnimationOnDOL {
+  from {
+    filter: blur(1.5rem);
+  }
+  to {
+    filter: blur(0);
+  }
+}
+
+@keyframes blurAnimationOnDOL2 {
+  from {
+    filter: blur(0);
+  }
+  to {
+    filter: blur(1.5rem);
+  }
+}

@@ -1,21 +1,21 @@
 import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
 import { CertificateDto } from "../models/Dto";
-import {
-  getInsertOrUpdateRecordScript,
-  getSelectLastRecordScript,
-  getSelectRecordsByIdScript,
-} from "../helpers/getScript";
+import { QueryBuilder } from "../helpers/QueryBuilder";
 
 export class CertificateService {
   private static selectQuery = (resume_id: number) =>
-    getSelectRecordsByIdScript("Certifacate", "resume_id", resume_id);
+    QueryBuilder.getSelectRecordsByIdScript(
+      "Certificate",
+      "resume_id",
+      resume_id
+    );
 
   private static selectLastRecordQuery = () =>
-    getSelectLastRecordScript("Certificate");
+    QueryBuilder.getSelectLastRecordScript("Certificate");
 
   private static insertOrUpdateQuery = (certificate: CertificateDto) =>
-    getInsertOrUpdateRecordScript("Certificate", certificate);
+    QueryBuilder.getInsertOrUpdateRecordScript("Certificate", certificate);
 
   public static async getResumeCertificates(
     resume_id: number

@@ -1,22 +1,18 @@
 import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
 import { PositionDto } from "../models/Dto";
-import {
-  getInsertOrUpdateRecordScript,
-  getSelectLastRecordScript,
-  getSelectRecordsByIdScript,
-} from "../helpers/getScript";
 import { SkillService } from "./SkillService";
+import { QueryBuilder } from "../helpers/QueryBuilder";
 
 export class PositionService {
   private static selectQuery = (resume_id: number) =>
-    getSelectRecordsByIdScript("Position", "resume_id", resume_id);
+    QueryBuilder.getSelectRecordsByIdScript("Position", "resume_id", resume_id);
 
   private static selectLastRecordQuery = () =>
-    getSelectLastRecordScript("Position");
+    QueryBuilder.getSelectLastRecordScript("Position");
 
   private static insertOrUpdateQuery = (position: PositionDto) =>
-    getInsertOrUpdateRecordScript("Position", position);
+    QueryBuilder.getInsertOrUpdateRecordScript("Position", position);
 
   public static async getResumePositions(
     resume_id: number

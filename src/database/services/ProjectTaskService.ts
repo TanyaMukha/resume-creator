@@ -1,31 +1,35 @@
 import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
 import { ProjectTaskDto } from "../models/Dto";
-import {
-  getInsertOrUpdateRecordScript,
-  getSelectLastRecordScript,
-  getSelectRecordsByIdScript,
-} from "../helpers/getScript";
+import { QueryBuilder } from "../helpers/QueryBuilder";
 
 export class ProjectTaskService {
   private static selectQuery = (project_id: number) =>
-    getSelectRecordsByIdScript("ProjectTask", "project_id", project_id);
+    QueryBuilder.getSelectRecordsByIdScript(
+      "ProjectTask",
+      "project_id",
+      project_id
+    );
 
   private static selectLastRecordQuery = () =>
-    getSelectLastRecordScript("ProjectTask");
+    QueryBuilder.getSelectLastRecordScript("ProjectTask");
 
   private static insertOrUpdateQuery = (task: ProjectTaskDto) =>
-    getInsertOrUpdateRecordScript("ProjectTask", task);
+    QueryBuilder.getInsertOrUpdateRecordScript("ProjectTask", task);
 
   public static async getProjectTasks(
     project_id: number
   ): Promise<ProjectTaskDto[]> {
     const db = await SQLite.open(databaseOptions.db);
-    const tasks = await db.select<ProjectTaskDto[]>(this.selectQuery(project_id));
+    const tasks = await db.select<ProjectTaskDto[]>(
+      this.selectQuery(project_id)
+    );
     return tasks;
   }
 
-  public static async setProjectTask(task: ProjectTaskDto): Promise<ProjectTaskDto> {
+  public static async setProjectTask(
+    task: ProjectTaskDto
+  ): Promise<ProjectTaskDto> {
     const db = await SQLite.open(databaseOptions.db);
     await this.insertOrUpdateQuery(task);
     const res_task = await db.select<ProjectTaskDto>(

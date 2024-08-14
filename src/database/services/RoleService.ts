@@ -1,15 +1,11 @@
 import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
 import { RoleDto } from "../models/Dto";
-import {
-  getInsertOrUpdateRecordScript,
-  getSelectLastRecordScript,
-  getSelectRecordsUseRelatedTableScript,
-} from "../helpers/getScript";
+import { QueryBuilder } from "../helpers/QueryBuilder";
 
 export class RoleService {
   private static selectQuery = (project_id: number) =>
-    getSelectRecordsUseRelatedTableScript(
+    QueryBuilder.getSelectRecordsUseRelatedTableScript(
       "Role",
       "ProjectRole",
       "id",
@@ -19,10 +15,10 @@ export class RoleService {
     );
 
   private static selectLastRecordQuery = () =>
-    getSelectLastRecordScript("Role");
+    QueryBuilder.getSelectLastRecordScript("Role");
 
   private static insertOrUpdateQuery = (role: RoleDto) =>
-    getInsertOrUpdateRecordScript("Role", role);
+    QueryBuilder.getInsertOrUpdateRecordScript("Role", role);
 
   public static async getProjectRoles(project_id: number): Promise<RoleDto[]> {
     const db = await SQLite.open(databaseOptions.db);

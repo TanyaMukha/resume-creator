@@ -1,21 +1,17 @@
 import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
 import { LanguageDto } from "../models/Dto";
-import {
-  getInsertOrUpdateRecordScript,
-  getSelectLastRecordScript,
-  getSelectRecordsByIdScript,
-} from "../helpers/getScript";
+import { QueryBuilder } from "../helpers/QueryBuilder";
 
 export class LanguageService {
   private static selectQuery = (resume_id: number) =>
-    getSelectRecordsByIdScript("Language", "resume_id", resume_id);
+    QueryBuilder.getSelectRecordsByIdScript("Language", "resume_id", resume_id);
 
   private static selectLastRecordQuery = () =>
-    getSelectLastRecordScript("Language");
+    QueryBuilder.getSelectLastRecordScript("Language");
 
   private static insertOrUpdateQuery = (language: LanguageDto) =>
-    getInsertOrUpdateRecordScript("Language", language);
+    QueryBuilder.getInsertOrUpdateRecordScript("Language", language);
 
   public static async getResumeLanguages(
     resume_id: number

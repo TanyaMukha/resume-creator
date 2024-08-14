@@ -1,21 +1,21 @@
 import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
 import { DiplomDto } from "../models/Dto";
-import {
-  getInsertOrUpdateRecordScript,
-  getSelectLastRecordScript,
-  getSelectRecordsByIdScript,
-} from "../helpers/getScript";
+import { QueryBuilder } from "../helpers/QueryBuilder";
 
 export class DiplomService {
   private static selectQuery = (education_id: number) =>
-    getSelectRecordsByIdScript("Diplom", "education_id", education_id);
+    QueryBuilder.getSelectRecordsByIdScript(
+      "Diplom",
+      "education_id",
+      education_id
+    );
 
   private static selectLastRecordQuery = () =>
-    getSelectLastRecordScript("Diplom");
+    QueryBuilder.getSelectLastRecordScript("Diplom");
 
   private static insertOrUpdateQuery = (diplom: DiplomDto) =>
-    getInsertOrUpdateRecordScript("Diplom", diplom);
+    QueryBuilder.getInsertOrUpdateRecordScript("Diplom", diplom);
 
   public static async getEducationDiploms(
     education_id: number

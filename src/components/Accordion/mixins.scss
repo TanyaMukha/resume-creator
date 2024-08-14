@@ -1,0 +1,37 @@
+$breakpoints: (
+  mobile: "(max-width: 639px)",
+  nomobile: "(min-width: 640px)",
+  tablet: "(max-width: 1024px) and (min-width: 640px)",
+  desktop: "(min-width: 1025px)",
+  nodesktop: "(max-width: 1024px)",
+  print: "print",
+) !default;
+
+@mixin respond-to($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media #{map-get($breakpoints, $breakpoint)} {
+      @content;
+    }
+  } @else {
+    @warn "Unknown breakpoint `#{$breakpoint}`, available breakpoints: #{map-keys($breakpoints)}.";
+  }
+}
+
+/**
+* @tokens Disabled Opacity Scss
+* @presenter Opacity
+*/
+$opacity-disabled: 0.3; /*
+disabled mixin:
+Components with actual disabled state use
+  @include disabled()
+For custom selector, use arguments:
+  @include disabled(".custom-selector")
+*/
+
+@mixin disabled($selector: ":disabled") {
+  &#{$selector} {
+    cursor: default;
+    opacity: $opacity-disabled;
+  }
+}

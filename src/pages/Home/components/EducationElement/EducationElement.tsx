@@ -1,5 +1,5 @@
 import { Stack, Typography } from "@mui/material";
-import { EducationDto } from "../../database/models/Dto";
+import { EducationDto } from "../../../../database/models/Dto";
 
 interface EducationElementProps {
   item: EducationDto;

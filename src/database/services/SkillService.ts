@@ -1,15 +1,11 @@
 import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
 import { SkillDto } from "../models/Dto";
-import {
-  getInsertOrUpdateRecordScript,
-  getSelectLastRecordScript,
-  getSelectRecordsUseRelatedTableScript,
-} from "../helpers/getScript";
+import { QueryBuilder } from "../helpers/QueryBuilder";
 
 export class SkillService {
   private static selectPositionSkillsQuery = (position_id: number) =>
-    getSelectRecordsUseRelatedTableScript(
+    QueryBuilder.getSelectRecordsUseRelatedTableScript(
       "Skill",
       "PositionSkill",
       "id",
@@ -19,7 +15,7 @@ export class SkillService {
     );
 
   private static selectProjectSkillsQuery = (project_id: number) =>
-    getSelectRecordsUseRelatedTableScript(
+    QueryBuilder.getSelectRecordsUseRelatedTableScript(
       "Skill",
       "ProjectSkill",
       "id",
@@ -29,10 +25,10 @@ export class SkillService {
     );
 
   private static selectLastRecordQuery = () =>
-    getSelectLastRecordScript("Skill");
+    QueryBuilder.getSelectLastRecordScript("Skill");
 
   private static insertOrUpdateQuery = (skill: SkillDto) =>
-    getInsertOrUpdateRecordScript("Skill", skill);
+    QueryBuilder.getInsertOrUpdateRecordScript("Skill", skill);
 
   public static async getPositionSkills(
     position_id: number

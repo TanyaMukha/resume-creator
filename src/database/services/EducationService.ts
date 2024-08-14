@@ -1,22 +1,22 @@
 import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
 import { EducationDto } from "../models/Dto";
-import {
-  getInsertOrUpdateRecordScript,
-  getSelectLastRecordScript,
-  getSelectRecordsByIdScript,
-} from "../helpers/getScript";
 import { DiplomService } from "./DiplomService";
+import { QueryBuilder } from "../helpers/QueryBuilder";
 
 export class EducationService {
   private static selectQuery = (resume_id: number) =>
-    getSelectRecordsByIdScript("Education", "resume_id", resume_id);
+    QueryBuilder.getSelectRecordsByIdScript(
+      "Education",
+      "resume_id",
+      resume_id
+    );
 
   private static selectLastRecordQuery = () =>
-    getSelectLastRecordScript("Education");
+    QueryBuilder.getSelectLastRecordScript("Education");
 
   private static insertOrUpdateQuery = (education: EducationDto) =>
-    getInsertOrUpdateRecordScript("Education", education);
+    QueryBuilder.getInsertOrUpdateRecordScript("Education", education);
 
   public static async getResumeEducation(
     resume_id: number
@@ -25,9 +25,9 @@ export class EducationService {
     const education = await db.select<EducationDto[]>(
       this.selectQuery(resume_id)
     );
-    education.forEach(async item => {
+    education.forEach(async (item) => {
       item.diploms = await DiplomService.getEducationDiploms(item.id);
-    })
+    });
     return education;
   }
 

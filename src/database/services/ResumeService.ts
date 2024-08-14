@@ -1,19 +1,19 @@
 import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
 import { ResumeDto } from "../models/Dto";
-import { getInsertOrUpdateRecordScript } from "../helpers/getScript";
 import { ContactService } from "./ContactService";
 import { LanguageService } from "./LanguageService";
 import { PositionService } from "./PositionService";
 import { EducationService } from "./EducationService";
 import { ExperienceService } from "./ExperienceService";
 import { CertificateService } from "./CertificateService";
+import { QueryBuilder } from "../helpers/QueryBuilder";
 
 export class ResumeService {
   private static selectQuery = () => "SELECT * FROM Resume LIMIT 1";
 
   private static insertOrUpdateQuery = (resume: ResumeDto) =>
-    getInsertOrUpdateRecordScript("Resume", resume);
+    QueryBuilder.getInsertOrUpdateRecordScript("Resume", resume);
 
   public static async getResume(): Promise<ResumeDto> {
     const db = await SQLite.open(databaseOptions.db);

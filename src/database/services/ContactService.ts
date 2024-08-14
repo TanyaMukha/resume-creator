@@ -1,21 +1,17 @@
 import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
 import { ContactDto } from "../models/Dto";
-import {
-  getInsertOrUpdateRecordScript,
-  getSelectLastRecordScript,
-  getSelectRecordsByIdScript,
-} from "../helpers/getScript";
+import { QueryBuilder } from "../helpers/QueryBuilder";
 
 export class ContactService {
   private static selectQuery = (resume_id: number) =>
-    getSelectRecordsByIdScript("Contact", "resume_id", resume_id);
+    QueryBuilder.getSelectRecordsByIdScript("Contact", "resume_id", resume_id);
 
   private static selectLastRecordQuery = () =>
-    getSelectLastRecordScript("Contact");
+    QueryBuilder.getSelectLastRecordScript("Contact");
 
   private static insertOrUpdateQuery = (contact: ContactDto) =>
-    getInsertOrUpdateRecordScript("Contact", contact);
+    QueryBuilder.getInsertOrUpdateRecordScript("Contact", contact);
 
   public static async getResumeContacts(
     resume_id: number

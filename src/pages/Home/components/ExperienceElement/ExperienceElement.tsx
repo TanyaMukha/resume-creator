@@ -1,6 +1,6 @@
 import { Stack, Typography } from "@mui/material";
 import styles from "./ExperienceElement.module.scss";
-import { ExperienceDto } from "../../database/models/Dto";
+import { ExperienceDto } from "../../../../database/models/Dto";
 
 interface ExperienceElementProps {
   item: ExperienceDto;
@@ -22,10 +22,10 @@ export default function ExperienceElement(props: ExperienceElementProps) {
         <Typography key={index}>{item.description}</Typography>
       ))} */}
       <Typography>{item.description}</Typography>
-      {item.tasks && (
+      {item.achievements && (
         <ul>
-          {item.tasks?.map((item, index) => (
-            <li key={index}>{item.description}</li>
+          {item.achievements?.map((item, index) => (
+            <li key={index}>{item.achievement}</li>
           ))}
         </ul>
       )}

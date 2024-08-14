@@ -1,4 +1,22 @@
+@import "../../components/Accordion/mixins.scss";
+
 .container {
   max-width: 750px;
   margin: 0 auto;
+  position: relative;
+}
+
+.editButton {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  & .editIcon {
+    font-size: 40px;
+
+    @include respond-to("print") {
+      display: none;
+    }
+  }
 }

@@ -1,31 +1,38 @@
 import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
 import { ProjectAchievementDto } from "../models/Dto";
-import {
-  getInsertOrUpdateRecordScript,
-  getSelectLastRecordScript,
-  getSelectRecordsByIdScript,
-} from "../helpers/getScript";
+import { QueryBuilder } from "../helpers/QueryBuilder";
 
 export class ProjectAchievementService {
   private static selectQuery = (project_id: number) =>
-    getSelectRecordsByIdScript("ProjectAchievement", "project_id", project_id);
+    QueryBuilder.getSelectRecordsByIdScript(
+      "ProjectAchievement",
+      "project_id",
+      project_id
+    );
 
   private static selectLastRecordQuery = () =>
-    getSelectLastRecordScript("ProjectAchievement");
+    QueryBuilder.getSelectLastRecordScript("ProjectAchievement");
 
   private static insertOrUpdateQuery = (achievement: ProjectAchievementDto) =>
-    getInsertOrUpdateRecordScript("ProjectAchievement", achievement);
+    QueryBuilder.getInsertOrUpdateRecordScript(
+      "ProjectAchievement",
+      achievement
+    );
 
   public static async getProjectAchievements(
     project_id: number
   ): Promise<ProjectAchievementDto[]> {
     const db = await SQLite.open(databaseOptions.db);
-    const achievements = await db.select<ProjectAchievementDto[]>(this.selectQuery(project_id));
+    const achievements = await db.select<ProjectAchievementDto[]>(
+      this.selectQuery(project_id)
+    );
     return achievements;
   }
 
-  public static async setProjectAchievement(achievement: ProjectAchievementDto): Promise<ProjectAchievementDto> {
+  public static async setProjectAchievement(
+    achievement: ProjectAchievementDto
+  ): Promise<ProjectAchievementDto> {
     const db = await SQLite.open(databaseOptions.db);
     await this.insertOrUpdateQuery(achievement);
     const res_achievement = await db.select<ProjectAchievementDto>(

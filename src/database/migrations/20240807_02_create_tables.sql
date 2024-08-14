@@ -53,7 +53,7 @@ CREATE TABLE Language (
 CREATE TABLE Position (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
-    salary INTEGER NOT NULL,
+    salary INTEGER,
     summary TEXT NOT NULL,
     expectation TEXT,
     unvisible BOOLEAN,
