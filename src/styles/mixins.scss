@@ -21,7 +21,9 @@ $breakpoints: (
 * @tokens Disabled Opacity Scss
 * @presenter Opacity
 */
-$opacity-disabled: 0.3; /*
+$opacity-disabled: 0.3; 
+
+/*
 disabled mixin:
 Components with actual disabled state use
   @include disabled()

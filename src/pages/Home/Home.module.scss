@@ -1,9 +1,10 @@
-@import "../../components/Accordion/mixins.scss";
+@import "../../styles/mixins.scss";
 
 .container {
   max-width: 750px;
   margin: 0 auto;
   position: relative;
+  // padding: 40px 40px 40px 110px;
 }
 
 .editButton {

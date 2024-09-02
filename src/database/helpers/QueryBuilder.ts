@@ -1,6 +1,9 @@
 import { DataHelper } from "./DataHelper";
 
 export class QueryBuilder {
+  public static getSelectRecordsScript = (tableName: string): string =>
+    DataHelper.interpolateString(`SELECT * FROM {0}`, [tableName]);
+
   public static getSelectRecordsByIdScript = (
     tableName: string,
     idName: string,

@@ -4,12 +4,8 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  styled,
   SxProps,
   Theme,
-  Tooltip,
-  tooltipClasses,
-  TooltipProps,
   Typography,
 } from "@mui/material";
 import { FC, useEffect, useState } from "react";
@@ -31,23 +27,7 @@ export interface AccordionPlusProps {
   sx?: SxProps<Theme>;
   withConfirm?: boolean;
 }
-const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
-  <Tooltip {...props} arrow classes={{ popper: className }} />
-))(() => ({
-  [`& .${tooltipClasses.arrow}`]: {
-    color: "#540352",
-  },
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: "#540352",
-    color: "#FFFFFF",
-    fontFamily: "DM Sans",
-    fontWeight: 500,
-    fontSize: "12px",
-    lineHeight: "16px",
-    textAlign: "center",
-    padding: "8px 8px",
-  },
-}));
+
 export const AccordionPlus: FC<AccordionPlusProps> = ({
   title = "Title",
   classes,
@@ -60,8 +40,6 @@ export const AccordionPlus: FC<AccordionPlusProps> = ({
   sx,
 }) => {
   const [del, setDel] = useState<boolean>(false);
-  const [openCopyTool, setOpenCopyTool] = useState(false);
-  const [openDeleteTool, setOpenDeleteTool] = useState(false);
 
   useEffect(() => {
     del && onClickDeleteIcon && setTimeout(onClickDeleteIcon, 350);
@@ -98,44 +76,25 @@ export const AccordionPlus: FC<AccordionPlusProps> = ({
           </Typography>
           <div>
             {onClickCloneIcon && (
-              <StyledTooltip
-                title="Dupliquer l'œuvre"
-                placement="top"
-                open={openCopyTool}
-                onMouseEnter={() => setOpenCopyTool(true)}
-                onMouseLeave={() => setOpenCopyTool(false)}
-              >
-                <ContentCopyIcon
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onClickCloneIcon();
-                  }}
-                  className={classNames(
-                    styles.deleteButton,
-                    styles.cloneButton
-                  )}
-                />
-              </StyledTooltip>
+              <ContentCopyIcon
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onClickCloneIcon();
+                }}
+                className={classNames(styles.deleteButton, styles.cloneButton)}
+              />
             )}
             {onClickDeleteIcon && (
-              <StyledTooltip
-                title="Supprimer l'œuvre"
-                placement="top"
-                open={openDeleteTool}
-                onMouseEnter={() => setOpenDeleteTool(true)}
-                onMouseLeave={() => setOpenDeleteTool(false)}
-              >
-                <DeleteOutlinedIcon
-                  viewBox="4 0 16 24"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setDel(true);
-                  }}
-                  className={styles.deleteButton}
-                />
-              </StyledTooltip>
+              <DeleteOutlinedIcon
+                viewBox="4 0 16 24"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setDel(true);
+                }}
+                className={styles.deleteButton}
+              />
             )}
           </div>
         </AccordionSummary>

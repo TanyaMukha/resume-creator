@@ -1,4 +1,4 @@
-@import "mixins";
+@import "../../styles/mixins.scss";
 /* style the wrapper component */
 .accordion {
   box-shadow: none !important;
@@ -29,7 +29,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: var(--primary-color-prune) !important;
+  color: black !important;
 
   &_icon {
     padding: 16px;
@@ -38,12 +38,12 @@
   &_root {
     min-height: 56px !important;
     max-height: 56px !important;
-    background-color: var(--grey10) !important;
+    background-color: rgb(111, 168, 243) !important;
   }
 
   & > span:first-child {
     @include respond-to("mobile") {
-      font-size: 14px;
+      font-size: 20px;
       text-align: start;
     }
   }
@@ -85,12 +85,14 @@
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
+  border: 1px solid rgb(136, 136, 136);
+  padding: 24px;
 
   @include respond-to("mobile") {
-    padding: 0 0 48px !important;
+    padding: 16px !important;
   }
   @include respond-to("nomobile") {
-    padding: 0 0 80px !important;
+    padding: 24px !important;
   }
 }
 

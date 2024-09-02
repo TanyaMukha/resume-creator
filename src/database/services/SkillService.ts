@@ -4,6 +4,9 @@ import { SkillDto } from "../models/Dto";
 import { QueryBuilder } from "../helpers/QueryBuilder";
 
 export class SkillService {
+  private static selectSkillsQuery = () =>
+    QueryBuilder.getSelectRecordsScript("Skill");
+
   private static selectPositionSkillsQuery = (position_id: number) =>
     QueryBuilder.getSelectRecordsUseRelatedTableScript(
       "Skill",
@@ -29,6 +32,12 @@ export class SkillService {
 
   private static insertOrUpdateQuery = (skill: SkillDto) =>
     QueryBuilder.getInsertOrUpdateRecordScript("Skill", skill);
+
+  public static async getSkills(): Promise<SkillDto[]> {
+    const db = await SQLite.open(databaseOptions.db);
+    const skills = await db.select<SkillDto[]>(this.selectSkillsQuery());
+    return skills;
+  }
 
   public static async getPositionSkills(
     position_id: number

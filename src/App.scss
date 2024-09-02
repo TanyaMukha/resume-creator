@@ -1,0 +1,18 @@
+@import "./styles/mixins.scss";
+
+body {
+  margin: 80px 24px;
+
+  @include respond-to("print") {
+    margin: 0;
+  }
+}
+
+.content {
+  padding: 24px;
+}
+
+* {
+  // font-size: 12px;
+  line-height: 1.2;
+}

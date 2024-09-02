@@ -1,8 +1,9 @@
 import { Box, Stack, TextField, Typography } from "@mui/material";
-import styles from "./GeneralInfo.module.scss";
+import styles from "../Step.module.scss";
 import { FormikProps } from "formik";
 import { AccordionPlus } from "../../../../components/Accordion/Accordion";
 import { ContactDto } from "../../../../database/models/Dto";
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 interface GeneralInfoProps {
   formikValidationSchema: FormikProps<any>;
@@ -16,44 +17,51 @@ export default function GeneralInfo(props: GeneralInfoProps) {
   const { formikValidationSchema, step, onChange, onBlur } = props;
 
   return (
-    <Box className={styles.container}>
-      <Box>
-        <Typography>General info</Typography>
+    <Box
+      className={styles.container}
+      sx={{ maxWidth: "663px", alignItems: "center" }}
+    >
+      <Typography variant="h2">General info</Typography>
+      <Stack sx={{ width: "100%", alignItems: "stretch" }}>
+        <Stack direction="row" gap="16px" sx={{ maxWidth: "663px" }}>
+          <TextField
+            key="first-name"
+            label="First name"
+            value={formikValidationSchema.values?.firstName}
+            onChange={(e) => onChange("firstName", e.target.value)}
+            variant="standard"
+            required
+            focused={
+              (formikValidationSchema.values?.firstName?.length ?? 0) > 0
+            }
+            sx={{ width: "100%" }}
+          />
+          <TextField
+            key="last-name"
+            label="Last name"
+            value={formikValidationSchema.values?.lastName}
+            onChange={(e) => onChange("lastName", e.target.value)}
+            variant="standard"
+            required
+            focused={(formikValidationSchema.values?.lastName?.length ?? 0) > 0}
+            sx={{ width: "100%" }}
+          />
+        </Stack>
         <TextField
-          key="first-name"
-          label="First name"
-          value={formikValidationSchema.values?.firstName}
-          onChange={(e) => onChange("firstName", e.target.value)}
+          key="age"
+          label="Age"
+          value={formikValidationSchema.values?.age}
+          onChange={(e) => onChange("age", e.target.value)}
           variant="standard"
           required
-          focused={(formikValidationSchema.values?.firstName?.length ?? 0) > 0}
+          focused={(formikValidationSchema.values?.age ?? 0) > 0}
         />
-        <TextField
-          key="last-name"
-          label="Last name"
-          value={formikValidationSchema.values?.lastName}
-          onChange={(e) => onChange("lastName", e.target.value)}
-          variant="standard"
-          required
-          focused={(formikValidationSchema.values?.lastName?.length ?? 0) > 0}
-        />
-      </Box>
-      <TextField
-        key="age"
-        label="Age"
-        value={formikValidationSchema.values?.age}
-        onChange={(e) => onChange("age", e.target.value)}
-        variant="standard"
-        required
-        focused={(formikValidationSchema.values?.age ?? 0) > 0}
-      />
-      {/* contacts: ContactDto[];
-        languages?: LanguageDto[];
-        positions: PositionDto[];
-        education: EducationDto[];
-        experience: ExperienceDto[];
-        certificates?: CertificateDto[]; */}
-      <Typography>Contacts</Typography>
+      </Stack>
+
+      <Typography variant="h2">
+        Contacts <AddCircleIcon />
+      </Typography>
+
       {formikValidationSchema.values?.contacts?.map(
         (item: ContactDto, index: number) => (
           <AccordionPlus
@@ -72,7 +80,10 @@ export default function GeneralInfo(props: GeneralInfoProps) {
             }
             key={index}
           >
-            <Stack className={styles.documentAccordion}>
+            <Stack
+              className={styles.documentAccordion}
+              sx={{ alignItems: "stretch" }}
+            >
               <TextField
                 key="contact-title"
                 label="Title"
