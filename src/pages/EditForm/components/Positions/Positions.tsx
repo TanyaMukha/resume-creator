@@ -14,6 +14,7 @@ import { PositionDto, SkillDto } from "../../../../database/models/Dto";
 import { useEffect, useState } from "react";
 import { SkillService } from "../../../../database/services/SkillService";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import { AddButton } from "../../../../components/Buttons/AddButton";
 
 interface PositionsProps {
   formikValidationSchema: FormikProps<any>;
@@ -94,19 +95,6 @@ export default function Positions(props: PositionsProps) {
                   focused={(item.summary?.length ?? 0) > 0}
                   multiline
                 />
-                <Stack
-                  direction="row"
-                  sx={{
-                    justifyContent: "space-between",
-                    alignItems: "flex-end",
-                    borderBottom: "1px solid black",
-                  }}
-                >
-                  <Typography variant="h3" sx={{ marginBottom: 0 }}>
-                    Expectations
-                  </Typography>
-                  <Button sx={{ lineHeight: "1em" }}>Add expectation</Button>
-                </Stack>
                 <TextField
                   key="position-expectation"
                   label="Expectation"
@@ -115,38 +103,20 @@ export default function Positions(props: PositionsProps) {
                     onChange(`positions[${index}].expectation`, e.target.value)
                   }
                   variant="standard"
-                  required
+                  // required
                   focused={(item.expectation?.length ?? 0) > 0}
                 />
-                <Button>Add expectation</Button>
                 <Typography variant="h3">Skills</Typography>
                 <Autocomplete
                   multiple
-                  id="fixed-tags-demo"
-                  // value={value}
-                  // onChange={(event, newValue) => {
-                  //   setValue([
-                  //     ...fixedOptions,
-                  //     ...newValue.filter(
-                  //       (option) => fixedOptions.indexOf(option) === -1
-                  //     ),
-                  //   ]);
-                  // }}
+                  value={item.skills}
+                  onChange={(e, newValue) => {
+                    console.log(newValue)
+                    onChange(`positions[${index}].skills`, newValue);
+                  }}
                   options={skills}
                   getOptionLabel={(option) => option.title}
-                  renderTags={(skillValue, getSkillProps) =>
-                    skillValue.map((option, index) => {
-                      const { key, ...skillProps } = getSkillProps({ index });
-                      return (
-                        <Chip
-                          key={key}
-                          label={option.title}
-                          {...skillProps}
-                          // disabled={fixedOptions.indexOf(option) !== -1}
-                        />
-                      );
-                    })
-                  }
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -159,6 +129,7 @@ export default function Positions(props: PositionsProps) {
             </AccordionPlus>
           )
         )}
+        <AddButton title="Add position" />
       </Stack>
     </Box>
   );

@@ -4,6 +4,7 @@ import { FormikProps } from "formik";
 import { AccordionPlus } from "../../../../components/Accordion/Accordion";
 import { DiplomDto, EducationDto } from "../../../../database/models/Dto";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import { AddButton } from "../../../../components/Buttons/AddButton";
 
 interface EducationProps {
   formikValidationSchema: FormikProps<any>;
@@ -141,13 +142,16 @@ export default function Education(props: EducationProps) {
                     </Stack>
                   </AccordionPlus>
                 ))}
+                <AddButton title="Add diplom" />
               </Stack>
             </AccordionPlus>
           )
         )}
+        <AddButton title="Add university" />
         <Typography variant="h2">
           Certificates <AddCircleIcon />
         </Typography>
+        <AddButton title="Add certificate" />
       </Stack>
     </Box>
   );

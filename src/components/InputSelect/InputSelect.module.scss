@@ -1,0 +1,36 @@
+@import "../../../core/mixins";
+
+/* Form control */
+.root {
+  width: 327px;
+
+  @include respond-to("mobile") {
+    width: 100%;
+  }
+}
+
+.select {
+  text-align: start;
+  font-family: "DM Sans" !important;
+  font-size: 16px !important;
+  line-height: 24px !important;
+  color: var(--primary-color-prune) !important;
+  font-weight: 500 !important;
+
+  &:hover::before {
+    border-bottom: 2px solid #ec4b64 !important;
+  }
+}
+
+/* icon */
+.icon {
+  color: inherit !important;
+  top: 5px !important;
+}
+
+.no-wrap-ellipsis {
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+  display: block !important;
+}

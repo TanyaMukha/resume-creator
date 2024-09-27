@@ -2,9 +2,9 @@ import { createTheme } from "@mui/material";
 
 export const customTheme = createTheme({
   palette: {
-    // primary: {
-    //   main: "#1f7775",
-    // },
+    primary: {
+      main: "rgb(111, 168, 243)",
+    },
     // secondary: {
     //   main: "#FF8360",
     // },
@@ -48,6 +48,33 @@ export const customTheme = createTheme({
       styleOverrides: {
         root: {
           marginBottom: "8px",
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          color: "white",
+          backgroundColor: "rgb(111, 168, 243)",
+          textTransform: "none",
+          fontSize: "16px",
+          padding: "10px 16px",
+          margin: "0 8px",
+          "&:hover": {
+            backgroundColor: "white",
+            color: "rgb(111, 168, 243)",
+          },
+        },
+      },
+    },
+    MuiFormControl: {
+      styleOverrides: {
+        root: {
+          "&.date-picker": {
+            label: { left: "-12px" },
+            input: { paddingLeft: 0 },
+            ".MuiInputBase-root": { backgroundColor: "transparent" },
+          },
         },
       },
     },

@@ -1,7 +1,10 @@
 import {
   Autocomplete,
   Box,
+  Button,
+  Checkbox,
   Chip,
+  FormControlLabel,
   Stack,
   TextField,
   Typography,
@@ -12,12 +15,23 @@ import { AccordionPlus } from "../../../../components/Accordion/Accordion";
 import {
   ExperienceAchievementDto,
   ExperienceDto,
+  ProjectAchievementDto,
   ProjectDto,
+  RoleDto,
   SkillDto,
 } from "../../../../database/models/Dto";
 import { useEffect, useState } from "react";
 import { SkillService } from "../../../../database/services/SkillService";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import { ParagraphTitle } from "../../../../components/ParagraphTitle/ParagraphTitle";
+import { AddButton } from "../../../../components/Buttons/AddButton";
+import { ListItemInput } from "../../../../components/ListItemInput/ListItemInput";
+// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
+import { DatePicker } from "../../../../components/DatePicker/DatePicker";
+import { PeriodInput } from "../../../../components/PeriodInput/PeriodInput";
 
 interface ExperienceProps {
   formikValidationSchema: FormikProps<any>;
@@ -36,6 +50,45 @@ export default function Experience(props: ExperienceProps) {
       setSkills(res);
     });
   }, []);
+
+  const addExperienceAchievement = (experienceIndex: number) =>
+    onChange(
+      `experience[${experienceIndex}].achievements[${formikValidationSchema.values.experience[experienceIndex]?.achievements?.length}]`,
+      {
+        id: 0,
+        achievement: undefined,
+      }
+    );
+
+  const addExperienceProject = (experienceIndex: number) =>
+    onChange(
+      `experience[${experienceIndex}].projects[${formikValidationSchema.values.experience[experienceIndex]?.projects?.length}]`,
+      {
+        id: 0,
+      }
+    );
+
+  const addExperienceProjectAchievement = (
+    experienceIndex: number,
+    projectIndex: number
+  ) =>
+    onChange(
+      `experience[${experienceIndex}].projects[${projectIndex}].achievements[${formikValidationSchema.values.experience[experienceIndex]?.projects[projectIndex].achievements?.length}]`,
+      {
+        id: 0,
+      }
+    );
+
+  const addExperienceProjectRole = (
+    experienceIndex: number,
+    projectIndex: number
+  ) =>
+    onChange(
+      `experience[${experienceIndex}].projects[${projectIndex}].roles[${formikValidationSchema.values.experience[experienceIndex]?.projects[projectIndex]?.roles?.length}]`,
+      {
+        id: 0,
+      }
+    );
 
   return (
     <Box className={styles.container}>
@@ -97,36 +150,20 @@ export default function Experience(props: ExperienceProps) {
                     sx={{ width: "140px" }}
                   />
                 </Stack>
-                <Stack direction="row" spacing={2}>
-                  <TextField
-                    key="experience-start"
-                    label="Start"
-                    value={experienceItem.start}
-                    onChange={(e) =>
-                      onChange(
-                        `experience[${experienceIndex}].start`,
-                        e.target.value
-                      )
-                    }
-                    variant="standard"
-                    required
-                    focused={(experienceItem.start?.length ?? 0) > 0}
-                  />
-                  <TextField
-                    key="experience-finish"
-                    label="Finish"
-                    value={experienceItem.finish}
-                    onChange={(e) =>
-                      onChange(
-                        `experience[${experienceIndex}].finish`,
-                        e.target.value
-                      )
-                    }
-                    variant="standard"
-                    required
-                    focused={(experienceItem.finish?.length ?? 0) > 0}
-                  />
-                </Stack>
+                <PeriodInput
+                  start={{
+                    label: "Start",
+                    value: experienceItem.start,
+                    onChange: (e) =>
+                      onChange(`experience[${experienceIndex}].start`, e),
+                  }}
+                  finish={{
+                    label: "Finish",
+                    value: experienceItem.finish,
+                    onChange: (e) =>
+                      onChange(`experience[${experienceIndex}].finish`, e),
+                  }}
+                />
                 <TextField
                   key="experience-position"
                   label="Position"
@@ -155,34 +192,51 @@ export default function Experience(props: ExperienceProps) {
                   focused={(experienceItem.description?.length ?? 0) > 0}
                   multiline
                 />
-                <Typography variant="h3">
-                  Achievements <AddCircleIcon />
-                </Typography>
+                <ParagraphTitle
+                  title="Achievements"
+                  buttonCaption="Add achievement"
+                  onClick={() => addExperienceAchievement(experienceIndex)}
+                />
                 {experienceItem.achievements?.map(
                   (
                     achieveItem: ExperienceAchievementDto,
                     achieveIndex: number
                   ) => (
-                    <TextField
-                      key="experience-achievement"
+                    <ListItemInput
+                      key={`experience-achievement-${achieveIndex}`}
                       label="Achievement"
-                      value={achieveItem.achievement}
+                      value={achieveItem.achievement ?? ""}
                       onChange={(e) =>
                         onChange(
                           `experience[${experienceIndex}].achievements[${achieveIndex}].achievement`,
                           e.target.value
                         )
                       }
-                      variant="standard"
+                      onDelete={() =>
+                        onChange(
+                          `experience[${experienceIndex}].achievements`,
+                          experienceItem.achievements?.filter(
+                            (_: ExperienceAchievementDto, i: number) =>
+                              i !== achieveIndex
+                          )
+                        )
+                      }
                       required
-                      focused={(achieveItem.achievement?.length ?? 0) > 0}
                       multiline
                     />
                   )
                 )}
-                <Typography variant="h3">
-                  Projects <AddCircleIcon />
-                </Typography>
+                {!!experienceItem.achievements?.length && (
+                  <AddButton
+                    title="Add achievement"
+                    onClick={() => addExperienceAchievement(experienceIndex)}
+                  />
+                )}
+                <ParagraphTitle
+                  title="Projects"
+                  buttonCaption="Add project"
+                  onClick={() => addExperienceProject(experienceIndex)}
+                />
                 {experienceItem.projects?.map(
                   (projectItem: ProjectDto, projectIndex: number) => (
                     <AccordionPlus
@@ -193,7 +247,7 @@ export default function Experience(props: ExperienceProps) {
                       }}
                       onClickDeleteIcon={() =>
                         onChange(
-                          `education[${projectIndex}].diploms`,
+                          `experience[${experienceIndex}].projects`,
                           experienceItem.projects?.filter(
                             (_: ProjectDto, i: number) => i !== projectIndex
                           )
@@ -233,36 +287,26 @@ export default function Experience(props: ExperienceProps) {
                           required
                           focused={(projectItem.client?.length ?? 0) > 0}
                         />
-                        <Stack direction="row" spacing={2}>
-                          <TextField
-                            key="experience-project-start"
-                            label="Start"
-                            value={projectItem.start}
-                            onChange={(e) =>
+                        <PeriodInput
+                          start={{
+                            label: "Start",
+                            value: projectItem.start,
+                            onChange: (e) =>
                               onChange(
                                 `experience[${experienceIndex}].projects[${projectIndex}].start`,
-                                e.target.value
-                              )
-                            }
-                            variant="standard"
-                            required
-                            focused={(projectItem.start?.length ?? 0) > 0}
-                          />
-                          <TextField
-                            key="experience-project-finish"
-                            label="Finish"
-                            value={projectItem.finish}
-                            onChange={(e) =>
+                                e
+                              ),
+                          }}
+                          finish={{
+                            label: "Finish",
+                            value: projectItem.finish,
+                            onChange: (e) =>
                               onChange(
                                 `experience[${experienceIndex}].projects[${projectIndex}].finish`,
-                                e.target.value
-                              )
-                            }
-                            variant="standard"
-                            required
-                            focused={(projectItem.finish?.length ?? 0) > 0}
-                          />
-                        </Stack>
+                                e
+                              ),
+                          }}
+                        />
                         <TextField
                           key="experience-project-description"
                           label="Description"
@@ -278,12 +322,104 @@ export default function Experience(props: ExperienceProps) {
                           focused={(projectItem.description?.length ?? 0) > 0}
                           multiline
                         />
-                        <Typography variant="h4">
-                          Roles <AddCircleIcon />
-                        </Typography>
-                        <Typography variant="h4">
-                          Achievements <AddCircleIcon />
-                        </Typography>
+                        <ParagraphTitle
+                          title="Roles"
+                          buttonCaption="Add role"
+                          variant="h4"
+                          onClick={() =>
+                            addExperienceProjectRole(
+                              experienceIndex,
+                              projectIndex
+                            )
+                          }
+                        />
+                        {projectItem.roles?.map(
+                          (roleItem: RoleDto, roleIndex: number) => (
+                            <ListItemInput
+                              key={`experience-project-role-${roleIndex}`}
+                              label="Project"
+                              value={roleItem.title ?? ""}
+                              onChange={(e) =>
+                                onChange(
+                                  `experience[${experienceIndex}].projects[${projectIndex}].roles[${roleIndex}].title`,
+                                  e.target.value
+                                )
+                              }
+                              onDelete={() =>
+                                onChange(
+                                  `experience[${experienceIndex}].projects[${projectIndex}].roles`,
+                                  projectItem.roles?.filter(
+                                    (_: RoleDto, i: number) => i !== roleIndex
+                                  )
+                                )
+                              }
+                              required
+                              multiline
+                            />
+                          )
+                        )}
+                        {!!projectItem.roles?.length && (
+                          <AddButton
+                            title="Add role"
+                            onClick={() =>
+                              addExperienceProjectRole(
+                                experienceIndex,
+                                projectIndex
+                              )
+                            }
+                          />
+                        )}
+                        <ParagraphTitle
+                          title="Achievements"
+                          buttonCaption="Add achievement"
+                          variant="h4"
+                          onClick={() =>
+                            addExperienceProjectAchievement(
+                              experienceIndex,
+                              projectIndex
+                            )
+                          }
+                        />
+                        {projectItem.achievements?.map(
+                          (
+                            achievementItem: ProjectAchievementDto,
+                            achievementIndex: number
+                          ) => (
+                            <ListItemInput
+                              key={`experience-project-achievement-${achievementIndex}`}
+                              label="Achievement"
+                              value={achievementItem.achievement ?? ""}
+                              onChange={(e) =>
+                                onChange(
+                                  `experience[${experienceIndex}].projects[${projectIndex}].achievements[${achievementIndex}].title`,
+                                  e.target.value
+                                )
+                              }
+                              onDelete={() =>
+                                onChange(
+                                  `experience[${experienceIndex}].projects[${projectIndex}].achievements`,
+                                  projectItem.achievements?.filter(
+                                    (_: ProjectAchievementDto, i: number) =>
+                                      i !== achievementIndex
+                                  )
+                                )
+                              }
+                              required
+                              multiline
+                            />
+                          )
+                        )}
+                        {!!projectItem.achievements?.length && (
+                          <AddButton
+                            title="Add achievement"
+                            onClick={() =>
+                              addExperienceProjectAchievement(
+                                experienceIndex,
+                                projectIndex
+                              )
+                            }
+                          />
+                        )}
                         <Typography variant="h4">Skills</Typography>
                         <Autocomplete
                           multiple
@@ -326,10 +462,29 @@ export default function Experience(props: ExperienceProps) {
                     </AccordionPlus>
                   )
                 )}
+                {!!experienceItem.projects?.length && (
+                  <AddButton
+                    title="Add project"
+                    onClick={() => addExperienceProject(experienceIndex)}
+                  />
+                )}
               </Stack>
             </AccordionPlus>
           )
         )}
+        {
+          <AddButton
+            title="Add experience"
+            onClick={() =>
+              onChange(
+                `experience[${formikValidationSchema.values.experience?.length}]`,
+                {
+                  id: 0,
+                }
+              )
+            }
+          />
+        }
       </Stack>
     </Box>
   );

@@ -84,7 +84,9 @@ export default function EditForm() {
 
   useEffect(() => {
     console.log("resumeValidationSchema.values", resumeValidationSchema.values);
-  }, [resumeValidationSchema.values]);
+    console.log("resumeValidationSchema.errors", resumeValidationSchema.errors);
+    console.log("validationSchema", validationSchema);
+  }, [resumeValidationSchema.values, resumeValidationSchema.errors]);
 
   const handleChangeStep = (e: number) => {
     if (e >= 0) {
