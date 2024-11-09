@@ -30,8 +30,17 @@ export class SkillService {
   private static selectLastRecordQuery = () =>
     QueryBuilder.getSelectLastRecordScript("Skill");
 
+  private static selectRecordByValueQuery = (field: string, value: any) =>
+    QueryBuilder.getSelectRecordsByValueScript("Skill", field, value);
+
   private static insertOrUpdateQuery = (skill: SkillDto) =>
     QueryBuilder.getInsertOrUpdateRecordScript("Skill", skill);
+
+  private static insertPositionSkillQuery = (skill: {
+    id: number;
+    skill_id: number;
+    position_id: number;
+  }) => QueryBuilder.getInsertOrUpdateRecordScript("PositionSkill", skill);
 
   public static async getSkills(): Promise<SkillDto[]> {
     const db = await SQLite.open(databaseOptions.db);
@@ -59,10 +68,36 @@ export class SkillService {
     return skills;
   }
 
+  public static async getSkillByValue(field: string, value: any): Promise<SkillDto[]> {
+    const db = await SQLite.open(databaseOptions.db);
+    const skills = await db.select<SkillDto[]>(this.selectRecordByValueQuery(field, value));
+    return skills;
+  }
+
   public static async setSkill(skill: SkillDto): Promise<SkillDto> {
     const db = await SQLite.open(databaseOptions.db);
-    await this.insertOrUpdateQuery(skill);
-    const res_skill = await db.select<SkillDto>(this.selectLastRecordQuery());
-    return res_skill;
+    console.log(this.insertOrUpdateQuery(skill));
+    await db.execute(this.insertOrUpdateQuery(skill));
+    const res_skill = await db.select<SkillDto[]>(this.selectLastRecordQuery());
+    return res_skill[0];
+  }
+
+  public static async setPositionSkill(skill_id: number, position_id: number) {
+    const db = await SQLite.open(databaseOptions.db);
+    console.log(
+      this.insertPositionSkillQuery({
+        id: 0,
+        skill_id: skill_id,
+        position_id: position_id,
+      })
+    );
+    await db.execute(
+      this.insertPositionSkillQuery({
+        id: 0,
+        skill_id: skill_id,
+        position_id: position_id,
+      })
+    );
+    return;
   }
 }

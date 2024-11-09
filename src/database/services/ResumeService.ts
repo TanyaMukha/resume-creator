@@ -1,6 +1,6 @@
 import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
-import { ResumeDto } from "../models/Dto";
+import { ContactDto, PositionDto, ResumeDto } from "../models/Dto";
 import { ContactService } from "./ContactService";
 import { LanguageService } from "./LanguageService";
 import { PositionService } from "./PositionService";
@@ -31,8 +31,20 @@ export class ResumeService {
 
   public static async setResume(resume: ResumeDto): Promise<ResumeDto> {
     const db = await SQLite.open(databaseOptions.db);
-    await this.insertOrUpdateQuery(resume);
+    console.log(this.insertOrUpdateQuery(resume));
+    await db.execute(this.insertOrUpdateQuery(resume));
     const res_resume = await db.select<ResumeDto>(this.selectQuery());
     return res_resume;
+  }
+
+  public static saveResume(resume: ResumeDto): Promise<ResumeDto> {
+    (resume.positions as PositionDto[]).forEach((item) =>
+      PositionService.setPosition(item).then((res) => console.log(item, res))
+    );
+    (resume.contacts as ContactDto[]).forEach((item) =>
+      ContactService.setContact(item).then((res) => console.log(item, res))
+    );
+    this.setResume(resume);
+    return this.getResume();
   }
 }

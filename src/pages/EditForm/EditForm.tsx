@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
-import styles from "./EditForm.module.scss";
 import { ResumeDto } from "../../database/models/Dto";
 import { ResumeService } from "../../database/services/ResumeService";
 import useResumeValidationSchema from "./useResumeValidationSchema";
 import { resumeSteps } from "./constants";
 
-import { classNames } from "../../helpers/classNames";
 import GeneralInfo from "./components/GeneralInfo/GeneralInfo";
 import {
   BottomNavigation,
   BottomNavigationAction,
   Box,
-  Stack,
   ThemeProvider,
 } from "@mui/material";
 import SchoolIcon from "@mui/icons-material/School";
@@ -24,7 +21,7 @@ import Experience from "./components/Experience/Experience";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
 import { customTheme } from "./EditForm.theme";
-import Home from "../Home/Home";
+import { AddButton } from "../../components/Buttons/AddButton";
 
 export default function EditForm() {
   const [resume, setResume] = useState<ResumeDto>({} as ResumeDto);
@@ -97,6 +94,13 @@ export default function EditForm() {
 
   const navigate = useNavigate();
 
+  const handleSaveResume = () => {
+    console.log("resumeValidationSchema.values", resumeValidationSchema.values);
+    resumeValidationSchema.setValues(
+      ResumeService.saveResume(resumeValidationSchema.values)
+    );
+  };
+
   return (
     <ThemeProvider theme={customTheme}>
       <>
@@ -134,6 +138,7 @@ export default function EditForm() {
             value={4}
           />
         </BottomNavigation>
+        <AddButton title="Save" onClick={handleSaveResume} />
         {/* <Stack direction="row"> */}
         {/* <Home /> */}
         <Box

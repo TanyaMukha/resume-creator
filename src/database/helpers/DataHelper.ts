@@ -20,4 +20,11 @@ export class DataHelper {
       return value !== undefined ? String(value) : match;
     });
   };
+
+  public static getUniqueElementsById<T extends { id: number }>(
+    a: T[],
+    b: T[]
+  ): T[] {
+    return a.filter((itemA) => !b.some((itemB) => itemA.id === itemB.id));
+  }
 }

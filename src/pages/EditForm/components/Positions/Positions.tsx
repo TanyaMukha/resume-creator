@@ -1,20 +1,12 @@
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Chip,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Autocomplete, Box, Stack, TextField, Typography } from "@mui/material";
 import styles from "../Step.module.scss";
 import { FormikProps } from "formik";
 import { AccordionPlus } from "../../../../components/Accordion/Accordion";
 import { PositionDto, SkillDto } from "../../../../database/models/Dto";
 import { useEffect, useState } from "react";
 import { SkillService } from "../../../../database/services/SkillService";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { AddButton } from "../../../../components/Buttons/AddButton";
+import { ParagraphTitlePlusOne } from "../../../../components/ParagraphTitlePlusOne/ParagraphTitlePlusOne";
 
 interface PositionsProps {
   formikValidationSchema: FormikProps<any>;
@@ -34,12 +26,20 @@ export default function Positions(props: PositionsProps) {
     });
   }, []);
 
+  const handleAddPosition = () => {
+    onChange(`positions[${formikValidationSchema.values.positions?.length}]`, {
+      id: 0,
+    });
+  };
+
   return (
     <Box className={styles.container}>
       <Stack sx={{ alignItems: "center" }}>
-        <Typography variant="h2">
-          Positions <AddCircleIcon />
-        </Typography>
+        <ParagraphTitlePlusOne
+          title={"Positions"}
+          hideIcon={false}
+          onClick={handleAddPosition}
+        />
         {formikValidationSchema.values?.positions?.map(
           (item: PositionDto, index: number) => (
             <AccordionPlus
@@ -109,27 +109,58 @@ export default function Positions(props: PositionsProps) {
                 <Typography variant="h3">Skills</Typography>
                 <Autocomplete
                   multiple
-                  value={item.skills}
+                  value={item.skills ?? []}
                   onChange={(e, newValue) => {
-                    console.log(newValue)
+                    console.log(newValue);
+                    if (newValue.length > 0) {
+                      if (typeof newValue[newValue.length - 1] === "string") {
+                        if (
+                          skills.find(
+                            (i) => i.title === newValue[newValue.length - 1]
+                          )
+                        ) {
+                          onChange(`positions[${index}].skills`, [
+                            ...newValue.length > 1 ? newValue.slice(0, -1) : [],
+                            skills.find(
+                              (i) => i.title === newValue[newValue.length - 1]
+                            ),
+                          ]);
+                          return;
+                        } else {
+                          if (
+                            !item.skills.find(
+                              (i) => i.title === newValue[newValue.length - 1]
+                            )
+                          )
+                            onChange(`positions[${index}].skills`, [
+                              ...newValue.length > 1 ? newValue.slice(0, -1) : [],
+                              { id: 0, title: newValue[newValue.length - 1] },
+                            ]);
+                          return;
+                        }
+                      }
+                    }
                     onChange(`positions[${index}].skills`, newValue);
                   }}
                   options={skills}
-                  getOptionLabel={(option) => option.title}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  getOptionLabel={(option) => (option as SkillDto).title}
+                  isOptionEqualToValue={(option, value) =>
+                    (option as SkillDto).title === value.title
+                  }
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Skills"
-                      placeholder="Choose skill"
+                      placeholder="Choose skill or Input + Enter"
                     />
                   )}
+                  freeSolo
                 />
               </Stack>
             </AccordionPlus>
           )
         )}
-        <AddButton title="Add position" />
+        <AddButton title="Add position" onClick={handleAddPosition} />
       </Stack>
     </Box>
   );

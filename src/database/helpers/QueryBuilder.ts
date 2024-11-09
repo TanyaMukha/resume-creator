@@ -15,6 +15,17 @@ export class QueryBuilder {
       idValue,
     ]);
 
+  public static getSelectRecordsByValueScript = (
+    tableName: string,
+    fieldName: string,
+    fieldValue: any
+  ): string =>
+    DataHelper.interpolateString(`SELECT * FROM {0} WHERE {1} = {2}`, [
+      tableName,
+      fieldName,
+      this.getQueryStringValue(fieldValue),
+    ]);
+
   public static getSelectLastRecordScript = (
     tableName: string,
     primaryIdName: string = "id"
@@ -62,10 +73,11 @@ export class QueryBuilder {
   ): string => {
     const columns = Object.keys(data)
       .filter((key) => key !== idField)
+      .map((key) => `[${key}]`)
       .join(", ");
 
     const values = Object.entries(data)
-      .filter(([key]) => key !== idField)
+      .filter(([key]) => key !== idField && typeof data[key] !== "object")
       .map(([, value]) => this.getQueryStringValue(value))
       .join(", ");
 
@@ -82,8 +94,8 @@ export class QueryBuilder {
     idField: string = "id"
   ): string => {
     const setClause = Object.entries(data)
-      .filter(([key]) => key !== idField)
-      .map(([key, value]) => `${key} = ${this.getQueryStringValue(value)}`)
+      .filter(([key]) => key !== idField && typeof data[key] !== "object")
+      .map(([key, value]) => `[${key}] = ${this.getQueryStringValue(value)}`)
       .join(", ");
 
     const whereClause = `${idField} = ${this.getQueryStringValue(
@@ -102,7 +114,21 @@ export class QueryBuilder {
     data: Record<string, any>,
     idField: string = "id"
   ): string =>
-    data[idField]
+    !data[idField]
       ? this.constructInsertQuery(tableName, data, idField)
       : this.constructUpdateQuery(tableName, data, idField);
+
+  public static getDeleteRecordScript = (
+    tableName: string,
+    data: Record<string, any>
+  ): string => {
+    const whereClause = Object.entries(data)
+      .filter(([key]) => typeof data[key] !== "object")
+      .map(([key, value]) => `[${key}] = ${this.getQueryStringValue(value)}`)
+      .join(" and ");
+    return DataHelper.interpolateString(`DELETE FROM {0} where {1}`, [
+      tableName,
+      whereClause,
+    ]);
+  };
 }

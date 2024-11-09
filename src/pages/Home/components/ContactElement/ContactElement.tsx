@@ -15,7 +15,12 @@ export default function ContactElement(props: ContactElementProps) {
   const { item } = props;
 
   return (
-    <Stack direction="row" spacing={1}>
+    <Stack
+      direction="row"
+      alignItems="center"
+      spacing={1}
+      sx={{ marginBottom: "4px" }}
+    >
       {icons.find((i) => i.key === item.type)?.node}
       {item?.type && getLink(item)}
     </Stack>
@@ -29,7 +34,7 @@ const icons = [
   },
   {
     key: ContactType.Email,
-    node: <MailOutlineIcon />,
+    node: <MailOutlineIcon height={22} />,
   },
   {
     key: ContactType.GitHub,

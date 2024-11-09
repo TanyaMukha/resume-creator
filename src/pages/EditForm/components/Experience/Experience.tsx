@@ -29,9 +29,10 @@ import { ListItemInput } from "../../../../components/ListItemInput/ListItemInpu
 // import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 // import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 // import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import dayjs from "dayjs";
-import { DatePicker } from "../../../../components/DatePicker/DatePicker";
+// import dayjs from "dayjs";
+// import { DatePicker } from "../../../../components/DatePicker/DatePicker";
 import { PeriodInput } from "../../../../components/PeriodInput/PeriodInput";
+import { ParagraphTitlePlusOne } from "../../../../components/ParagraphTitlePlusOne/ParagraphTitlePlusOne";
 
 interface ExperienceProps {
   formikValidationSchema: FormikProps<any>;
@@ -53,7 +54,10 @@ export default function Experience(props: ExperienceProps) {
 
   const addExperienceAchievement = (experienceIndex: number) =>
     onChange(
-      `experience[${experienceIndex}].achievements[${formikValidationSchema.values.experience[experienceIndex]?.achievements?.length}]`,
+      `experience[${experienceIndex}].achievements[${
+        formikValidationSchema.values.experience[experienceIndex]?.achievements
+          ?.length ?? 0
+      }]`,
       {
         id: 0,
         achievement: undefined,
@@ -62,7 +66,10 @@ export default function Experience(props: ExperienceProps) {
 
   const addExperienceProject = (experienceIndex: number) =>
     onChange(
-      `experience[${experienceIndex}].projects[${formikValidationSchema.values.experience[experienceIndex]?.projects?.length}]`,
+      `experience[${experienceIndex}].projects[${
+        formikValidationSchema.values.experience[experienceIndex]?.projects
+          ?.length ?? 0
+      }]`,
       {
         id: 0,
       }
@@ -73,7 +80,11 @@ export default function Experience(props: ExperienceProps) {
     projectIndex: number
   ) =>
     onChange(
-      `experience[${experienceIndex}].projects[${projectIndex}].achievements[${formikValidationSchema.values.experience[experienceIndex]?.projects[projectIndex].achievements?.length}]`,
+      `experience[${experienceIndex}].projects[${projectIndex}].achievements[${
+        formikValidationSchema.values.experience[experienceIndex]?.projects[
+          projectIndex
+        ].achievements?.length ?? 0
+      }]`,
       {
         id: 0,
       }
@@ -84,7 +95,11 @@ export default function Experience(props: ExperienceProps) {
     projectIndex: number
   ) =>
     onChange(
-      `experience[${experienceIndex}].projects[${projectIndex}].roles[${formikValidationSchema.values.experience[experienceIndex]?.projects[projectIndex]?.roles?.length}]`,
+      `experience[${experienceIndex}].projects[${projectIndex}].roles[${
+        formikValidationSchema.values.experience[experienceIndex]?.projects[
+          projectIndex
+        ]?.roles?.length ?? 0
+      }]`,
       {
         id: 0,
       }
@@ -93,9 +108,7 @@ export default function Experience(props: ExperienceProps) {
   return (
     <Box className={styles.container}>
       <Stack sx={{ alignItems: "center" }}>
-        <Typography variant="h2">
-          Experience <AddCircleIcon />
-        </Typography>
+        <ParagraphTitlePlusOne title={"Experience"} hideIcon={false} />
         {formikValidationSchema.values?.experience?.map(
           (experienceItem: ExperienceDto, experienceIndex: number) => (
             <AccordionPlus
@@ -240,7 +253,7 @@ export default function Experience(props: ExperienceProps) {
                 {experienceItem.projects?.map(
                   (projectItem: ProjectDto, projectIndex: number) => (
                     <AccordionPlus
-                      title={`${projectItem.title}` ?? "New project"}
+                      title={projectItem.title ?? "New project"}
                       classes={{
                         summary: styles.pruneTitle,
                         details: styles.docAccordionDetails,

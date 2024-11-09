@@ -1,10 +1,14 @@
-import { Box, Stack, TextField, Typography } from "@mui/material";
+import { Box, Stack, TextField } from "@mui/material";
 import styles from "../Step.module.scss";
 import { FormikProps } from "formik";
 import { AccordionPlus } from "../../../../components/Accordion/Accordion";
-import { DiplomDto, EducationDto } from "../../../../database/models/Dto";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
+import {
+  CertificateDto,
+  DiplomDto,
+  EducationDto,
+} from "../../../../database/models/Dto";
 import { AddButton } from "../../../../components/Buttons/AddButton";
+import { ParagraphTitlePlusOne } from "../../../../components/ParagraphTitlePlusOne/ParagraphTitlePlusOne";
 
 interface EducationProps {
   formikValidationSchema: FormikProps<any>;
@@ -17,12 +21,29 @@ interface EducationProps {
 export default function Education(props: EducationProps) {
   const { formikValidationSchema, step, onChange, onBlur } = props;
 
+  const handleAddUniversity = () => {
+    onChange(`education[${formikValidationSchema.values.education?.length}]`, {
+      id: 0,
+    });
+  };
+
+  const handleAddCertificate = () => {
+    onChange(
+      `certificates[${formikValidationSchema.values.certificates?.length}]`,
+      {
+        id: 0,
+      }
+    );
+  };
+
   return (
     <Box className={styles.container}>
       <Stack sx={{ alignItems: "center" }}>
-        <Typography variant="h2">
-          Education <AddCircleIcon />
-        </Typography>
+        <ParagraphTitlePlusOne
+          title={"Education"}
+          hideIcon={false}
+          onClick={handleAddUniversity}
+        />
         {formikValidationSchema?.values?.education?.map(
           (educationItem: EducationDto, educationIndex: number) => (
             <AccordionPlus
@@ -60,9 +81,13 @@ export default function Education(props: EducationProps) {
                   focused={(educationItem.university?.length ?? 0) > 0}
                   sx={{ marginBottom: "16px" }}
                 />
-                {educationItem.diploms.map((diplomItem, diplomIndex) => (
+                {educationItem.diploms?.map((diplomItem, diplomIndex) => (
                   <AccordionPlus
-                    title={`${diplomItem.degree} degree` ?? "New diplom"}
+                    title={
+                      diplomItem.degree
+                        ? `${diplomItem.degree} degree`
+                        : "New diplom"
+                    }
                     classes={{
                       summary: styles.pruneTitle,
                       details: styles.docAccordionDetails,
@@ -142,16 +167,99 @@ export default function Education(props: EducationProps) {
                     </Stack>
                   </AccordionPlus>
                 ))}
-                <AddButton title="Add diplom" />
+                <AddButton
+                  title="Add diplom"
+                  onClick={() =>
+                    onChange(
+                      `education[${educationIndex}].diploms[${educationItem.diploms.length}]`,
+                      {
+                        id: 0,
+                      }
+                    )
+                  }
+                />
               </Stack>
             </AccordionPlus>
           )
         )}
-        <AddButton title="Add university" />
-        <Typography variant="h2">
-          Certificates <AddCircleIcon />
-        </Typography>
-        <AddButton title="Add certificate" />
+        <AddButton title="Add university" onClick={handleAddUniversity} />
+        <ParagraphTitlePlusOne
+          title={"Certificates"}
+          hideIcon={false}
+          onClick={handleAddCertificate}
+        />
+        {formikValidationSchema?.values?.certificates?.map(
+          (certificateItem: CertificateDto, certificateIndex: number) => (
+            <AccordionPlus
+              title={certificateItem.title ?? "New certificate"}
+              classes={{
+                summary: styles.pruneTitle,
+                details: styles.docAccordionDetails,
+              }}
+              onClickDeleteIcon={() =>
+                onChange(
+                  `certificates`,
+                  formikValidationSchema?.values?.certificates?.filter(
+                    (_: CertificateDto, i: number) => i !== certificateIndex
+                  )
+                )
+              }
+              key={certificateIndex}
+            >
+              <Stack
+                className={styles.documentAccordion}
+                sx={{ alignItems: "stretch" }}
+              >
+                <TextField
+                  key="certificate-title"
+                  label="Title"
+                  value={certificateItem.title}
+                  onChange={(e) =>
+                    onChange(
+                      `certificates[${certificateIndex}].title`,
+                      e.target.value
+                    )
+                  }
+                  variant="standard"
+                  required
+                  focused={(certificateItem.title?.length ?? 0) > 0}
+                  sx={{ marginBottom: "16px" }}
+                />
+                <TextField
+                  key="certificate-year"
+                  label="Year"
+                  value={certificateItem.year}
+                  onChange={(e) =>
+                    onChange(
+                      `certificates[${certificateIndex}].year`,
+                      e.target.value
+                    )
+                  }
+                  variant="standard"
+                  required
+                  focused={(certificateItem.year ?? 0) > 0}
+                  sx={{ marginBottom: "16px" }}
+                />
+                <TextField
+                  key="certificate-link"
+                  label="URL"
+                  value={certificateItem.link}
+                  onChange={(e) =>
+                    onChange(
+                      `certificates[${certificateIndex}].link`,
+                      e.target.value
+                    )
+                  }
+                  variant="standard"
+                  required
+                  focused={(certificateItem.link?.length ?? 0) > 0}
+                  sx={{ marginBottom: "16px" }}
+                />
+              </Stack>
+            </AccordionPlus>
+          )
+        )}
+        <AddButton title="Add certificate" onClick={handleAddCertificate} />
       </Stack>
     </Box>
   );

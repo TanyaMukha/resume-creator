@@ -7,6 +7,9 @@ export class ContactService {
   private static selectQuery = (resume_id: number) =>
     QueryBuilder.getSelectRecordsByIdScript("Contact", "resume_id", resume_id);
 
+  private static selectRecordByIdQuery = (id: number) =>
+    QueryBuilder.getSelectRecordsByIdScript("Contact", "id", id);
+
   private static selectLastRecordQuery = () =>
     QueryBuilder.getSelectLastRecordScript("Contact");
 
@@ -23,9 +26,10 @@ export class ContactService {
 
   public static async setContact(contact: ContactDto): Promise<ContactDto> {
     const db = await SQLite.open(databaseOptions.db);
-    await this.insertOrUpdateQuery(contact);
+    console.log(this.insertOrUpdateQuery(contact));
+    await db.execute(this.insertOrUpdateQuery(contact));
     const res_contact = await db.select<ContactDto>(
-      this.selectLastRecordQuery()
+      !contact.id ? this.selectLastRecordQuery() : this.selectRecordByIdQuery(contact.id)
     );
     return res_contact;
   }

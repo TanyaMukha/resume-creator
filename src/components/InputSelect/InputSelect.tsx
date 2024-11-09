@@ -9,8 +9,8 @@ import {
 } from "@mui/material"
 import { RefObject } from "react"
 
-import { classNames } from "../../../helpers/classNames"
-import { ExpandMore } from "../../Icons"
+import { classNames } from "../../helpers/classNames"
+import { ExpandMore } from "../Icons/ExpandMore"
 import styles from "./InputSelect.module.scss"
 
 interface InputSelectProps {

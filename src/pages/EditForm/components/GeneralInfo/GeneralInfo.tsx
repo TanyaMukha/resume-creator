@@ -1,11 +1,19 @@
-import { Box, Stack, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+} from "@mui/material";
 import styles from "../Step.module.scss";
 import { FormikProps } from "formik";
 import { AccordionPlus } from "../../../../components/Accordion/Accordion";
 import { ContactDto } from "../../../../database/models/Dto";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { AddButton } from "../../../../components/Buttons/AddButton";
 import { DatePicker } from "../../../../components/DatePicker/DatePicker";
+import { ContactType } from "../../../../database/models/enums";
+import { useEffect, useState } from "react";
+import { ParagraphTitlePlusOne } from "../../../../components/ParagraphTitlePlusOne/ParagraphTitlePlusOne";
 
 interface GeneralInfoProps {
   formikValidationSchema: FormikProps<any>;
@@ -18,12 +26,36 @@ interface GeneralInfoProps {
 export default function GeneralInfo(props: GeneralInfoProps) {
   const { formikValidationSchema, step, onChange, onBlur } = props;
 
+  const getExistingContactTypes = () =>
+    (formikValidationSchema.values.contacts as ContactDto[])?.map(
+      (contact) => contact.type
+    );
+
+  const [existingContactTypes, setExistingContactTypes] = useState(
+    getExistingContactTypes()
+  );
+
+  useEffect(() => {
+    setExistingContactTypes(getExistingContactTypes());
+  }, [formikValidationSchema.values.contacts]);
+
+  const handleAddContact = () => {
+    const remainders = Object.values(ContactType).filter(
+      (type) => !existingContactTypes.includes(type)
+    );
+    onChange(`contacts[${formikValidationSchema.values.contacts?.length}]`, {
+      id: 0,
+      type: remainders.length === 1 ? remainders[0] : undefined,
+      resume_id: formikValidationSchema.values.id,
+    });
+  };
+
   return (
     <Box
       className={styles.container}
       sx={{ maxWidth: "800px", alignItems: "center" }}
     >
-      <Typography variant="h2">General info</Typography>
+      <ParagraphTitlePlusOne title={"General info"} hideIcon={true}/>
       <Stack sx={{ width: "100%", alignItems: "stretch" }}>
         <Stack direction="row" gap="16px" sx={{ maxWidth: "800px" }}>
           <TextField
@@ -53,30 +85,47 @@ export default function GeneralInfo(props: GeneralInfoProps) {
             sx={{ width: "100%" }}
           />
         </Stack>
-        <DatePicker
-          label="Birthday"
-          value={formikValidationSchema.values?.birthday}
-          onChange={(e) => onChange("birthday", e)}
-          onBlur={() => onBlur("birthday")}
-          helperText={formikValidationSchema.errors.birthday as string}
-          dateFormat="DD.MM.YYYY"
-        />
-        <TextField
-          key="age"
-          label="Age"
-          value={formikValidationSchema.values?.age}
-          onChange={(e) => onChange("age", e.target.value)}
-          onBlur={() => onBlur("age")}
-          helperText={formikValidationSchema.errors.age as string}
-          variant="standard"
-          required
-          focused={(formikValidationSchema.values?.age ?? 0) > 0}
-        />
+        <Stack
+          direction="row"
+          gap="16px"
+          sx={{ maxWidth: "800px" }}
+          alignItems="flex-end"
+        >
+          <DatePicker
+            label="Birthday"
+            value={formikValidationSchema.values?.birthday}
+            onChange={(e) => onChange("birthday", e)}
+            onBlur={() => onBlur("birthday")}
+            helperText={formikValidationSchema.errors.birthday as string}
+            dateFormat="DD.MM.YYYY"
+          />
+          <TextField
+            key="age"
+            label="Age"
+            value={formikValidationSchema.values?.age}
+            onChange={(e) => onChange("age", e.target.value)}
+            onBlur={() => onBlur("age")}
+            helperText={formikValidationSchema.errors.age as string}
+            variant="standard"
+            required
+            disabled={true}
+            InputLabelProps={{ shrink: true }}
+          />
+          {/* <FormControlLabel
+            control={<Checkbox />}
+            label="show my age"
+            sx={{ display: "flex", span: { margin: 0 } }}
+          /> */}
+        </Stack>
       </Stack>
 
-      <Typography variant="h2">
-        Contacts <AddCircleIcon />
-      </Typography>
+      <ParagraphTitlePlusOne
+        title={"Contacts"}
+        hideIcon={
+          existingContactTypes?.length === Object.keys(ContactType).length
+        }
+        onClick={handleAddContact}
+      />
 
       {formikValidationSchema.values?.contacts?.map(
         (item: ContactDto, index: number) => (
@@ -94,12 +143,34 @@ export default function GeneralInfo(props: GeneralInfoProps) {
                 )
               )
             }
-            key={index}
+            key={item.type ?? index}
           >
             <Stack
               className={styles.documentAccordion}
               sx={{ alignItems: "stretch" }}
             >
+              {!item.type && (
+                <Select
+                  labelId="demo-simple-select-standard-label"
+                  id="demo-simple-select-standard"
+                  variant="standard"
+                  onChange={(e) =>
+                    onChange(
+                      `contacts[${index}].type`,
+                      ContactType[e.target.value as keyof typeof ContactType]
+                    )
+                  }
+                  label="Age"
+                >
+                  {Object.values(ContactType)
+                    .filter((type) => !existingContactTypes.includes(type))
+                    .map((type) => (
+                      <MenuItem key={index} value={type}>
+                        {type}
+                      </MenuItem>
+                    ))}
+                </Select>
+              )}
               <TextField
                 key="contact-title"
                 label="Title"
@@ -137,7 +208,9 @@ export default function GeneralInfo(props: GeneralInfoProps) {
         )
       )}
 
-      <AddButton title="Add contact" />
+      {existingContactTypes?.length !== Object.keys(ContactType).length && (
+        <AddButton title="Add contact" onClick={handleAddContact} />
+      )}
     </Box>
   );
 }
