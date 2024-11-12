@@ -11,6 +11,9 @@ export class ExperienceTaskService {
       experience_id
     );
 
+  private static selectRecordByIdQuery = (id: number) =>
+    QueryBuilder.getSelectRecordsByIdScript("ExperienceTask", "id", id);
+
   private static selectLastRecordQuery = () =>
     QueryBuilder.getSelectLastRecordScript("ExperienceTask");
 
@@ -31,10 +34,12 @@ export class ExperienceTaskService {
     task: ExperienceTaskDto
   ): Promise<ExperienceTaskDto> {
     const db = await SQLite.open(databaseOptions.db);
-    await this.insertOrUpdateQuery(task);
-    const res_task = await db.select<ExperienceTaskDto>(
-      this.selectLastRecordQuery()
+    await db.execute(this.insertOrUpdateQuery(task));
+    const res_task = await db.select<ExperienceTaskDto[]>(
+      !task.id
+        ? this.selectLastRecordQuery()
+        : this.selectRecordByIdQuery(task.id)
     );
-    return res_task;
+    return res_task?.[0];
   }
 }

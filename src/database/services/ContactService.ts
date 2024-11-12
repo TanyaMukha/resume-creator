@@ -24,13 +24,14 @@ export class ContactService {
     return contacts;
   }
 
-  public static async setContact(contact: ContactDto): Promise<ContactDto> {
+  public static async saveContact(contact: ContactDto): Promise<ContactDto> {
     const db = await SQLite.open(databaseOptions.db);
-    console.log(this.insertOrUpdateQuery(contact));
     await db.execute(this.insertOrUpdateQuery(contact));
-    const res_contact = await db.select<ContactDto>(
-      !contact.id ? this.selectLastRecordQuery() : this.selectRecordByIdQuery(contact.id)
+    const res_contact = await db.select<ContactDto[]>(
+      !contact.id
+        ? this.selectLastRecordQuery()
+        : this.selectRecordByIdQuery(contact.id)
     );
-    return res_contact;
+    return res_contact?.[0];
   }
 }

@@ -1,4 +1,12 @@
-import { Box, Stack, TextField } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+} from "@mui/material";
 import styles from "../Step.module.scss";
 import { FormikProps } from "formik";
 import { AccordionPlus } from "../../../../components/Accordion/Accordion";
@@ -32,6 +40,7 @@ export default function Education(props: EducationProps) {
       `certificates[${formikValidationSchema.values.certificates?.length}]`,
       {
         id: 0,
+        resume_id: formikValidationSchema.values.id,
       }
     );
   };
@@ -108,7 +117,7 @@ export default function Education(props: EducationProps) {
                     >
                       <Stack direction="row" spacing={2}>
                         <TextField
-                          key="experience-diplom-start"
+                          key="education-diplom-start"
                           label="Start"
                           value={diplomItem.start}
                           onChange={(e) =>
@@ -122,7 +131,7 @@ export default function Education(props: EducationProps) {
                           focused={(diplomItem.start?.length ?? 0) > 0}
                         />
                         <TextField
-                          key="experience-diplom-finish"
+                          key="education-diplom-finish"
                           label="Finish"
                           value={diplomItem.finish}
                           onChange={(e) =>
@@ -136,20 +145,33 @@ export default function Education(props: EducationProps) {
                           focused={(diplomItem.finish?.length ?? 0) > 0}
                         />
                       </Stack>
-                      <TextField
-                        key="experience-diplom-degree"
-                        label="Degree"
-                        value={diplomItem.degree}
-                        onChange={(e) =>
-                          onChange(
-                            `education[${educationIndex}].diploms[${diplomIndex}].degree`,
-                            e.target.value
-                          )
-                        }
-                        variant="standard"
-                        required
-                        focused={(diplomItem.degree?.length ?? 0) > 0}
-                      />
+                      <FormControl variant="standard">
+                        <InputLabel
+                          id={`education-diplom-degree-label-${educationIndex}-${diplomIndex}`}
+                        >
+                          Degree
+                        </InputLabel>
+                        <Select
+                          labelId={`education-diplom-degree-label-${educationIndex}-${diplomIndex}`}
+                          id={`education-diplom-degree-select-${educationIndex}-${diplomIndex}`}
+                          variant="standard"
+                          value={diplomItem.degree}
+                          required
+                          onChange={(e) =>
+                            onChange(
+                              `education[${educationIndex}].diploms[${diplomIndex}].degree`,
+                              e.target.value
+                            )
+                          }
+                        >
+                          <MenuItem key="Bachelor" value="Bachelor">
+                            Bachelor
+                          </MenuItem>
+                          <MenuItem key="Master" value="Master">
+                            Master
+                          </MenuItem>
+                        </Select>
+                      </FormControl>
                       <TextField
                         key="experience-diplom-specialization"
                         label="Specialization"

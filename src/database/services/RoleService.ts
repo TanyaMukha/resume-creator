@@ -14,6 +14,9 @@ export class RoleService {
       project_id
     );
 
+  private static selectRecordByIdQuery = (id: number) =>
+    QueryBuilder.getSelectRecordsByIdScript("Role", "id", id);
+
   private static selectLastRecordQuery = () =>
     QueryBuilder.getSelectLastRecordScript("Role");
 
@@ -26,10 +29,14 @@ export class RoleService {
     return roles;
   }
 
-  public static async setRole(role: RoleDto): Promise<RoleDto> {
+  public static async saveRole(role: RoleDto): Promise<RoleDto> {
     const db = await SQLite.open(databaseOptions.db);
-    await this.insertOrUpdateQuery(role);
-    const res_role = await db.select<RoleDto>(this.selectLastRecordQuery());
+    await db.execute(this.insertOrUpdateQuery(role));
+    const res_role = await db.select<RoleDto>(
+      !role.id
+        ? this.selectLastRecordQuery()
+        : this.selectRecordByIdQuery(role.id)
+    );
     return res_role;
   }
 }

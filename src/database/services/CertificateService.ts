@@ -11,6 +11,9 @@ export class CertificateService {
       resume_id
     );
 
+  private static selectRecordByIdQuery = (id: number) =>
+    QueryBuilder.getSelectRecordsByIdScript("Certificate", "id", id);
+
   private static selectLastRecordQuery = () =>
     QueryBuilder.getSelectLastRecordScript("Certificate");
 
@@ -27,14 +30,16 @@ export class CertificateService {
     return certificates;
   }
 
-  public static async setCertificate(
+  public static async saveCertificate(
     certificate: CertificateDto
   ): Promise<CertificateDto> {
     const db = await SQLite.open(databaseOptions.db);
-    await this.insertOrUpdateQuery(certificate);
-    const res_certificate = await db.select<CertificateDto>(
-      this.selectLastRecordQuery()
+    await db.execute(this.insertOrUpdateQuery(certificate));
+    const res_certificate = await db.select<CertificateDto[]>(
+      !certificate.id
+        ? this.selectLastRecordQuery()
+        : this.selectRecordByIdQuery(certificate.id)
     );
-    return res_certificate;
+    return res_certificate?.[0];
   }
 }

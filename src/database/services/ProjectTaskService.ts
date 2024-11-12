@@ -11,6 +11,9 @@ export class ProjectTaskService {
       project_id
     );
 
+  private static selectRecordByIdQuery = (id: number) =>
+    QueryBuilder.getSelectRecordsByIdScript("ProjectTask", "id", id);
+
   private static selectLastRecordQuery = () =>
     QueryBuilder.getSelectLastRecordScript("ProjectTask");
 
@@ -27,14 +30,16 @@ export class ProjectTaskService {
     return tasks;
   }
 
-  public static async setProjectTask(
+  public static async saveProjectTask(
     task: ProjectTaskDto
   ): Promise<ProjectTaskDto> {
     const db = await SQLite.open(databaseOptions.db);
-    await this.insertOrUpdateQuery(task);
-    const res_task = await db.select<ProjectTaskDto>(
-      this.selectLastRecordQuery()
+    await db.execute(this.insertOrUpdateQuery(task));
+    const res_task = await db.select<ProjectTaskDto[]>(
+      !task.id
+        ? this.selectLastRecordQuery()
+        : this.selectRecordByIdQuery(task.id)
     );
-    return res_task;
+    return res_task?.[0];
   }
 }

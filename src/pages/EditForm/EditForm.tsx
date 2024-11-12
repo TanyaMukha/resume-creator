@@ -94,10 +94,10 @@ export default function EditForm() {
 
   const navigate = useNavigate();
 
-  const handleSaveResume = () => {
+  const handleSaveResume = async () => {
     console.log("resumeValidationSchema.values", resumeValidationSchema.values);
     resumeValidationSchema.setValues(
-      ResumeService.saveResume(resumeValidationSchema.values)
+      await ResumeService.saveResume(resumeValidationSchema.values)
     );
   };
 

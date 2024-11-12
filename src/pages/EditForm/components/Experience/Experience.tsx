@@ -4,7 +4,11 @@ import {
   Button,
   Checkbox,
   Chip,
+  FormControl,
   FormControlLabel,
+  InputLabel,
+  MenuItem,
+  Select,
   Stack,
   TextField,
   Typography,
@@ -33,6 +37,7 @@ import { ListItemInput } from "../../../../components/ListItemInput/ListItemInpu
 // import { DatePicker } from "../../../../components/DatePicker/DatePicker";
 import { PeriodInput } from "../../../../components/PeriodInput/PeriodInput";
 import { ParagraphTitlePlusOne } from "../../../../components/ParagraphTitlePlusOne/ParagraphTitlePlusOne";
+import { CompanyType } from "../../../../database/models/enums";
 
 interface ExperienceProps {
   formikValidationSchema: FormikProps<any>;
@@ -147,21 +152,30 @@ export default function Experience(props: ExperienceProps) {
                     focused={(experienceItem.company?.length ?? 0) > 0}
                     sx={{ width: "100%" }}
                   />
-                  <TextField
-                    key="experience-type"
-                    label="Type"
-                    value={experienceItem.type}
-                    onChange={(e) =>
-                      onChange(
-                        `experience[${experienceIndex}].type`,
-                        e.target.value
-                      )
-                    }
-                    variant="standard"
-                    required
-                    focused={(experienceItem.type?.length ?? 0) > 0}
-                    sx={{ width: "140px" }}
-                  />
+                  <FormControl variant="standard">
+                    <InputLabel id={`company-type-label-${experienceIndex}`}>
+                      Type
+                    </InputLabel>
+                    <Select
+                      labelId={`company-type-label-${experienceIndex}`}
+                      id={`company-type-select-${experienceIndex}`}
+                      variant="standard"
+                      value={experienceItem.type}
+                      onChange={(e) =>
+                        onChange(
+                          `experience[${experienceIndex}].type`,
+                          e.target.value
+                        )
+                      }
+                      label="Type"
+                    >
+                      {Object.entries(CompanyType).map(([key, type]) => (
+                        <MenuItem key={key} value={type}>
+                          {type}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Stack>
                 <PeriodInput
                   start={{

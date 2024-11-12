@@ -11,6 +11,9 @@ export class ProjectAchievementService {
       project_id
     );
 
+  private static selectRecordByIdQuery = (id: number) =>
+    QueryBuilder.getSelectRecordsByIdScript("ProjectAchievement", "id", id);
+
   private static selectLastRecordQuery = () =>
     QueryBuilder.getSelectLastRecordScript("ProjectAchievement");
 
@@ -30,14 +33,16 @@ export class ProjectAchievementService {
     return achievements;
   }
 
-  public static async setProjectAchievement(
+  public static async saveProjectAchievement(
     achievement: ProjectAchievementDto
   ): Promise<ProjectAchievementDto> {
     const db = await SQLite.open(databaseOptions.db);
-    await this.insertOrUpdateQuery(achievement);
-    const res_achievement = await db.select<ProjectAchievementDto>(
-      this.selectLastRecordQuery()
+    await db.execute(this.insertOrUpdateQuery(achievement));
+    const res_achievement = await db.select<ProjectAchievementDto[]>(
+      !achievement.id
+        ? this.selectLastRecordQuery()
+        : this.selectRecordByIdQuery(achievement.id)
     );
-    return res_achievement;
+    return res_achievement?.[0];
   }
 }

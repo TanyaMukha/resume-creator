@@ -7,6 +7,9 @@ export class LanguageService {
   private static selectQuery = (resume_id: number) =>
     QueryBuilder.getSelectRecordsByIdScript("Language", "resume_id", resume_id);
 
+  private static selectRecordByIdQuery = (id: number) =>
+    QueryBuilder.getSelectRecordsByIdScript("Language", "id", id);
+
   private static selectLastRecordQuery = () =>
     QueryBuilder.getSelectLastRecordScript("Language");
 
@@ -25,10 +28,12 @@ export class LanguageService {
 
   public static async setLanguage(language: LanguageDto): Promise<LanguageDto> {
     const db = await SQLite.open(databaseOptions.db);
-    await this.insertOrUpdateQuery(language);
-    const res_language = await db.select<LanguageDto>(
-      this.selectLastRecordQuery()
+    await db.execute(this.insertOrUpdateQuery(language));
+    const res_language = await db.select<LanguageDto[]>(
+      !language.id
+        ? this.selectLastRecordQuery()
+        : this.selectRecordByIdQuery(language.id)
     );
-    return res_language;
+    return res_language?.[0];
   }
 }

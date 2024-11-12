@@ -11,6 +11,9 @@ export class DiplomService {
       education_id
     );
 
+  private static selectRecordByIdQuery = (id: number) =>
+    QueryBuilder.getSelectRecordsByIdScript("Diplom", "id", id);
+
   private static selectLastRecordQuery = () =>
     QueryBuilder.getSelectLastRecordScript("Diplom");
 
@@ -27,10 +30,14 @@ export class DiplomService {
     return diploms;
   }
 
-  public static async setDiplom(diplom: DiplomDto): Promise<DiplomDto> {
+  public static async saveDiplom(diplom: DiplomDto): Promise<DiplomDto> {
     const db = await SQLite.open(databaseOptions.db);
-    await this.insertOrUpdateQuery(diplom);
-    const res_diplom = await db.select<DiplomDto>(this.selectLastRecordQuery());
-    return res_diplom;
+    await db.execute(this.insertOrUpdateQuery(diplom));
+    const res_diplom = await db.select<DiplomDto[]>(
+      !diplom.id
+        ? this.selectLastRecordQuery()
+        : this.selectRecordByIdQuery(diplom.id)
+    );
+    return res_diplom?.[0];
   }
 }

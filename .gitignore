@@ -16,6 +16,7 @@ dist-ssr
 private
 resume.db
 resume-copy.db
+templates
 
 # Editor directories and files
 .vscode/*

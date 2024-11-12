@@ -11,6 +11,9 @@ export class ExperienceAchievementService {
       experience_id
     );
 
+  private static selectRecordByIdQuery = (id: number) =>
+    QueryBuilder.getSelectRecordsByIdScript("ExperienceAchievement", "id", id);
+
   private static selectLastRecordQuery = () =>
     QueryBuilder.getSelectLastRecordScript("ExperienceAchievement");
 
@@ -32,14 +35,16 @@ export class ExperienceAchievementService {
     return achievements;
   }
 
-  public static async setExperienceAchievement(
+  public static async saveExperienceAchievement(
     achievement: ExperienceAchievementDto
   ): Promise<ExperienceAchievementDto> {
     const db = await SQLite.open(databaseOptions.db);
-    await this.insertOrUpdateQuery(achievement);
-    const res_achievement = await db.select<ExperienceAchievementDto>(
-      this.selectLastRecordQuery()
+    await db.execute(this.insertOrUpdateQuery(achievement));
+    const res_achievement = await db.select<ExperienceAchievementDto[]>(
+      !achievement.id
+        ? this.selectLastRecordQuery()
+        : this.selectRecordByIdQuery(achievement.id)
     );
-    return res_achievement;
+    return res_achievement?.[0];
   }
 }
