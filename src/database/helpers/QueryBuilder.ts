@@ -41,10 +41,15 @@ export class QueryBuilder {
     tableIdName: string,
     relatedTableIdName: string,
     relatedTableFilterIdName: string,
-    relatedTableFilterIdValue: number
-  ): string =>
-    DataHelper.interpolateString(
-      `SELECT {0}.* FROM {0} INNER JOIN {1} ON {0}.{2} = {1}.{3} WHERE {1}.{4} = {5}`,
+    relatedTableFilterIdValue: number,
+    where?: Record<string, any>
+  ): string => {
+    const whereClause = where ? " and " + Object.entries(where)
+      .filter(([key]) => typeof where[key] !== "object")
+      .map(([key, value]) => `[${key}] = ${this.getQueryStringValue(value)}`)
+      .join(" and ") : "";
+    return DataHelper.interpolateString(
+      `SELECT {0}.* FROM {0} INNER JOIN {1} ON {0}.{2} = {1}.{3} WHERE {1}.{4} = {5}${whereClause}`,
       [
         tableName,
         relatedTableName,
@@ -54,6 +59,7 @@ export class QueryBuilder {
         relatedTableFilterIdValue,
       ]
     );
+  };
 
   public static getQueryStringValue = (value: any): string => {
     if (value === undefined) {
@@ -61,7 +67,7 @@ export class QueryBuilder {
     } else if (typeof value === "boolean") {
       return value ? "1" : "0";
     } else if (typeof value === "string") {
-      return `'${value}'`;
+      return `'${value.replace(/'/g, `''`)}'`;
     }
     return String(value);
   };

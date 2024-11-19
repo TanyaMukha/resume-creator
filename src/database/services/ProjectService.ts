@@ -1,14 +1,11 @@
 import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
 import {
-  ProjectAchievementDto,
+  ProjectDeliverableDto,
   ProjectDto,
-  ProjectTaskDto,
   SkillDto,
 } from "../models/Dto";
-import { ProjectTaskService } from "./ProjectTaskService";
-import { ProjectAchievementService } from "./ProjectAchievementService";
-import { RoleService } from "./RoleService";
+import { ProjectDeliverableService } from "./ProjectDeliverableService";
 import { QueryBuilder } from "../helpers/QueryBuilder";
 import { DataHelper } from "../helpers/DataHelper";
 import { SkillService } from "./SkillService";
@@ -46,22 +43,13 @@ export class ProjectService {
     project_id: number;
   }) => QueryBuilder.getInsertOrUpdateRecordScript("ProjectSkill", skill);
 
-  private static deleteProjectAchievementsQuery = (
+  private static deleteProjectDeliverablesQuery = (
     project_id: number,
-    achievement_id: number
+    deliverable_id: number
   ) =>
-    QueryBuilder.getDeleteRecordScript("ProjectAchievement", {
+    QueryBuilder.getDeleteRecordScript("ProjectDeliverable", {
       project_id: project_id,
-      id: achievement_id,
-    });
-
-  private static deleteProjectTasksQuery = (
-    project_id: number,
-    task_id: number
-  ) =>
-    QueryBuilder.getDeleteRecordScript("ProjectTask", {
-      project_id: project_id,
-      id: task_id,
+      id: deliverable_id,
     });
 
   private static deleteProjectSkillQuery = (data: Record<string, any>) =>
@@ -85,19 +73,14 @@ export class ProjectService {
       this.selectQuery(experience_id)
     );
     projects.forEach(async (item) => {
-      item.roles = await RoleService.getProjectRoles(item.id);
-      item.tasks = await ProjectTaskService.getProjectTasks(item.id);
-      item.achievements =
-        await ProjectAchievementService.getProjectAchievements(item.id);
-      item.skills = await this.getProjectSkills(item.id);
+      item.deliverables =
+        await ProjectDeliverableService.getProjectDeliverables(item.id);
+      item.hard_skills = await this.getProjectSkills(item.id);
     });
     return projects;
   }
 
-  public static async addSkillToPosition(
-    skill_id: number,
-    project_id: number
-  ) {
+  public static async addSkillToProject(skill_id: number, project_id: number) {
     const db = await SQLite.open(databaseOptions.db);
     await db.execute(
       this.insertProjectSkillQuery({
@@ -118,40 +101,24 @@ export class ProjectService {
         : this.selectRecordByIdQuery(project.id)
     );
 
-    // Update achievements
-    const res_allProjectAchievements =
-      await ProjectAchievementService.getProjectAchievements(res_project[0].id);
-    for (const achievement of DataHelper.getUniqueElementsById(
-      res_allProjectAchievements,
-      project.achievements ?? []
+    // Update deliverables
+    const res_allProjectDeliverables =
+      await ProjectDeliverableService.getProjectDeliverables(res_project[0].id);
+    for (const deliverable of DataHelper.getUniqueElementsById(
+      res_allProjectDeliverables,
+      project.deliverables ?? []
     )) {
       await db.execute(
-        this.deleteProjectAchievementsQuery(res_project[0].id, achievement.id)
+        this.deleteProjectDeliverablesQuery(res_project[0].id, deliverable.id)
       );
     }
-    for (const achievement of project.achievements as ProjectAchievementDto[]) {
-      await ProjectAchievementService.saveProjectAchievement(achievement);
-    }
-
-    // Update achievements
-    const res_allProjectTasks = await ProjectTaskService.getProjectTasks(
-      res_project[0].id
-    );
-    for (const task of DataHelper.getUniqueElementsById(
-      res_allProjectTasks,
-      project.tasks ?? []
-    )) {
-      await db.execute(
-        this.deleteProjectTasksQuery(res_project[0].id, task.id)
-      );
-    }
-    for (const task of project.tasks as ProjectTaskDto[]) {
-      await ProjectTaskService.saveProjectTask(task);
+    for (const deliverable of project.deliverables as ProjectDeliverableDto[]) {
+      await ProjectDeliverableService.saveProjectDeliverable(deliverable);
     }
 
     // Update Skills
     let res_newSkill: SkillDto | undefined;
-    for (const skill of project.skills.filter((i) => i.id === 0)) {
+    for (const skill of project.hard_skills.filter((i) => i.id === 0)) {
       try {
         res_newSkill = await SkillService.saveSkill(skill);
       } catch {
@@ -159,12 +126,12 @@ export class ProjectService {
         res_newSkill = res.length > 0 ? res[0] : undefined;
       }
       if (res_newSkill)
-        await this.addSkillToPosition(res_newSkill.id, res_project[0].id);
+        await this.addSkillToProject(res_newSkill.id, res_project[0].id);
     }
     const res_allProjectSkills = await this.getProjectSkills(project.id);
     for (const skill of DataHelper.getUniqueElementsById(
       res_allProjectSkills,
-      project.skills
+      project.hard_skills
     )) {
       await db.execute(
         this.deleteProjectSkillQuery({

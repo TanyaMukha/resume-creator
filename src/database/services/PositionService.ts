@@ -45,7 +45,7 @@ export class PositionService {
       this.selectQuery(resume_id)
     );
     positions.forEach(async (item) => {
-      item.skills = await this.getPositionSkills(item.id);
+      item.hard_skills = await this.getPositionSkills(item.id);
     });
     return positions;
   }
@@ -88,7 +88,7 @@ export class PositionService {
 
     // Update Skills
     let res_newSkill: SkillDto | undefined;
-    for (const skill of position.skills.filter((i) => i.id === 0)) {
+    for (const skill of position.hard_skills.filter((i) => i.id === 0)) {
       try {
         res_newSkill = await SkillService.saveSkill(skill);
       } catch {
@@ -101,7 +101,7 @@ export class PositionService {
     const res_allPositionSkills = await this.getPositionSkills(position.id);
     for (const skill of DataHelper.getUniqueElementsById(
       res_allPositionSkills,
-      position.skills
+      position.hard_skills
     )) {
       await db.execute(
         this.deletePositionSkillQuery({

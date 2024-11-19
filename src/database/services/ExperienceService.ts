@@ -1,16 +1,16 @@
 import SQLite from "tauri-plugin-sqlite-api";
 import { databaseOptions } from "../options";
 import {
-  ExperienceAchievementDto,
+  ExperienceDeliverableDto,
   ExperienceDto,
-  ExperienceTaskDto,
   ProjectDto,
+  SkillDto,
 } from "../models/Dto";
-import { ExperienceAchievementService } from "./ExperienceAchievementService";
+import { ExperienceDeliverableService } from "./ExperienceDeliverableService";
 import { ProjectService } from "./ProjectService";
-import { ExperienceTaskService } from "./ExperienceTaskService";
 import { QueryBuilder } from "../helpers/QueryBuilder";
 import { DataHelper } from "../helpers/DataHelper";
+import { SkillService } from "./SkillService";
 
 export class ExperienceService {
   private static selectQuery = (resume_id: number) =>
@@ -29,22 +29,13 @@ export class ExperienceService {
   private static insertOrUpdateQuery = (experience: ExperienceDto) =>
     QueryBuilder.getInsertOrUpdateRecordScript("Experience", experience);
 
-  private static deleteExperienceAchievementsQuery = (
+  private static deleteExperienceDeliverablesQuery = (
     experience_id: number,
-    achievement_id: number
+    deliverable_id: number
   ) =>
-    QueryBuilder.getDeleteRecordScript("ExperienceAchievement", {
+    QueryBuilder.getDeleteRecordScript("ExperienceDeliverable", {
       experience_id: experience_id,
-      id: achievement_id,
-    });
-
-  private static deleteExperienceTasksQuery = (
-    experience_id: number,
-    task_id: number
-  ) =>
-    QueryBuilder.getDeleteRecordScript("ExperienceTask", {
-      experience_id: experience_id,
-      id: task_id,
+      id: deliverable_id,
     });
 
   private static deleteExperienceProjectsQuery = (
@@ -56,6 +47,50 @@ export class ExperienceService {
       id: project_id,
     });
 
+  private static selectExperienceSkillsQuery = (experience_id: number) =>
+    QueryBuilder.getSelectRecordsUseRelatedTableScript(
+      "Skill",
+      "ExperienceSkill",
+      "id",
+      "skill_id",
+      "experience_id",
+      experience_id
+    );
+
+  private static insertExperienceSkillQuery = (skill: {
+    id: number;
+    skill_id: number;
+    experience_id: number;
+  }) => QueryBuilder.getInsertOrUpdateRecordScript("ExperienceSkill", skill);
+
+  private static deleteExperienceSkillQuery = (data: Record<string, any>) =>
+    QueryBuilder.getDeleteRecordScript("ExperienceSkill", data);
+
+  public static async getExperienceSkills(
+    experience_id: number
+  ): Promise<SkillDto[]> {
+    const db = await SQLite.open(databaseOptions.db);
+    const skills = await db.select<SkillDto[]>(
+      this.selectExperienceSkillsQuery(experience_id)
+    );
+    return skills;
+  }
+
+  public static async addSkillToExperience(
+    skill_id: number,
+    experience_id: number
+  ) {
+    const db = await SQLite.open(databaseOptions.db);
+    await db.execute(
+      this.insertExperienceSkillQuery({
+        id: 0,
+        skill_id: skill_id,
+        experience_id: experience_id,
+      })
+    );
+    return;
+  }
+
   public static async getResumeExperiences(
     resume_id: number
   ): Promise<ExperienceDto[]> {
@@ -64,10 +99,10 @@ export class ExperienceService {
       this.selectQuery(resume_id)
     );
     experiences.forEach(async (item) => {
-      item.achievements =
-        await ExperienceAchievementService.getExperienceAchievements(item.id);
+      item.deliverables =
+        await ExperienceDeliverableService.getExperienceDeliverables(item.id);
       item.projects = await ProjectService.getExperienceProjects(item.id);
-      item.tasks = await ExperienceTaskService.getExperienceTasks(item.id);
+      item.hard_skills = await this.getExperienceSkills(item.id);
     });
     return experiences;
   }
@@ -83,42 +118,54 @@ export class ExperienceService {
         : this.selectRecordByIdQuery(experience.id)
     );
 
-    // Update achievements
-    const res_allExperienceAchievements =
-      await ExperienceAchievementService.getExperienceAchievements(
+    // Update deliverables
+    const res_allExperienceDeliverables =
+      await ExperienceDeliverableService.getExperienceDeliverables(
         res_experience[0].id
       );
-    for (const achievement of DataHelper.getUniqueElementsById(
-      res_allExperienceAchievements,
-      experience.achievements ?? []
+    for (const deliverable of DataHelper.getUniqueElementsById(
+      res_allExperienceDeliverables,
+      experience.deliverables ?? []
     )) {
       await db.execute(
-        this.deleteExperienceAchievementsQuery(
+        this.deleteExperienceDeliverablesQuery(
           res_experience[0].id,
-          achievement.id
+          deliverable.id
         )
       );
     }
-    for (const achievement of experience.achievements as ExperienceAchievementDto[]) {
-      await ExperienceAchievementService.saveExperienceAchievement(achievement);
+    for (const deliverable of experience.deliverables as ExperienceDeliverableDto[]) {
+      await ExperienceDeliverableService.saveExperienceDeliverable(deliverable);
     }
 
-    // Update achievements
-    const res_allExperienceTasks =
-      await ExperienceTaskService.getExperienceTasks(res_experience[0].id);
-    for (const task of DataHelper.getUniqueElementsById(
-      res_allExperienceTasks,
-      experience.tasks ?? []
+    // Update Skills
+    let res_newSkill: SkillDto | undefined;
+    for (const skill of experience.hard_skills.filter((i) => i.id === 0)) {
+      try {
+        res_newSkill = await SkillService.saveSkill(skill);
+      } catch {
+        const res = await SkillService.getSkillByValue("title", skill.title);
+        res_newSkill = res.length > 0 ? res[0] : undefined;
+      }
+      if (res_newSkill)
+        await this.addSkillToExperience(res_newSkill.id, res_experience[0].id);
+    }
+    const res_allExperienceSkills = await this.getExperienceSkills(
+      experience.id
+    );
+    for (const skill of DataHelper.getUniqueElementsById(
+      res_allExperienceSkills,
+      experience.hard_skills
     )) {
       await db.execute(
-        this.deleteExperienceTasksQuery(res_experience[0].id, task.id)
+        this.deleteExperienceSkillQuery({
+          experience_id: res_experience?.[0].id,
+          skill_id: skill.id,
+        })
       );
     }
-    for (const task of experience.tasks as ExperienceTaskDto[]) {
-      await ExperienceTaskService.setExperienceTask(task);
-    }
 
-    // TODO: update projects
+    // Update projects
     const res_allProjects = await ProjectService.getExperienceProjects(
       res_experience[0].id
     );

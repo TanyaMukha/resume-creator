@@ -1,4 +1,4 @@
-import { CompanyType, ContactType, DegreeType, LanguageLevel } from "./enums";
+import { ContactType, DegreeType, LanguageLevel } from "./enums";
 
 export interface MigrationDto {
   id: number;
@@ -7,22 +7,28 @@ export interface MigrationDto {
   executed: string;
 }
 
+export interface SkillGroupDto {
+  id: number;
+  title: string;
+}
+
 export interface SkillDto {
   id: number;
   title: string;
-  order?: number;
-  unvisible?: boolean;
+  resume_id?: number;
+  group_id?: number;
+  display_order?: number;
+  type: number;
 }
 
 export interface PositionDto {
   id: number;
   title: string;
-  salary: number;
-  summary: string;
-  expectation?: string;
-  unvisible?: boolean;
+  salary?: number;
+  summary?: string;
+  objective?: string;
   resume_id: number;
-  skills: SkillDto[];
+  hard_skills: SkillDto[];
 }
 
 export interface DiplomDto {
@@ -31,36 +37,20 @@ export interface DiplomDto {
   finish: string;
   degree: DegreeType;
   specialization: string;
-  unvisible?: boolean;
   education_id: number;
 }
 
 export interface EducationDto {
   id: number;
   university: string;
-  unvisible?: boolean;
   resume_id: number;
   diploms: DiplomDto[];
 }
 
-export interface RoleDto {
+export interface ProjectDeliverableDto {
   id: number;
-  title: string;
-  order?: number;
-  unvisible?: boolean;
-}
-
-export interface ProjectTaskDto {
-  id: number,
-  description: string,
-  unvisible?: boolean,
   project_id: number;
-}
-
-export interface ProjectAchievementDto {
-  id: number,
-  project_id: number;
-  achievement: string;
+  deliverable: string;
 }
 
 export interface ProjectDto {
@@ -70,49 +60,43 @@ export interface ProjectDto {
   description: string;
   start: string;
   finish?: string;
-  unvisible?: boolean;
   experience_id: number;
-  roles: RoleDto[];
-  tasks: ProjectTaskDto[];
-  achievements?: ProjectAchievementDto[];
-  skills: SkillDto[];
+  deliverables?: ProjectDeliverableDto[];
+  deliverables_title?: string;
+  hard_skills: SkillDto[];
+  key_project: boolean;
 }
 
-export interface ExperienceAchievementDto {
-  id: number,
+export interface ExperienceDeliverableDto {
+  id: number;
   experience_id: number;
-  achievement: string;
-}
-
-export interface ExperienceTaskDto {
-  id: number,
-  description: string,
-  unvisible?: boolean,
-  experience_id: number;
+  deliverable: string;
 }
 
 export interface ExperienceDto {
   id: number;
   company?: string;
   location?: string;
-  type?: CompanyType;
   start: string;
   finish?: string;
   position: string;
   description?: string;
-  unvisible?: boolean;
   resume_id: number;
-  achievements?: ExperienceAchievementDto[];
+  deliverables?: ExperienceDeliverableDto[];
+  deliverables_title?: string;
   projects?: ProjectDto[];
-  tasks?: ExperienceTaskDto[];
+  hard_skills: SkillDto[];
 }
 
 export interface CertificateDto {
   id: number;
   title: string;
-  year: number;
+  start: number;
   link: string;
-  unvisible?: boolean;
+  issuer?: string; // Организация, выдавшая сертификат
+  credentialId?: string; // Уникальный идентификатор сертификата
+  finish?: number; // Год истечения (если есть)
+  type?: "certification" | "course" | "diploma" | "other"; // Тип сертификата
   resume_id: number;
 }
 
@@ -120,7 +104,6 @@ export interface LanguageDto {
   id: number;
   title: string;
   level: LanguageLevel;
-  unvisible?: boolean;
   resume_id: number;
 }
 
@@ -129,8 +112,27 @@ export interface ContactDto {
   type: ContactType;
   title: string;
   value: string;
-  order?: number;
-  unvisible?: boolean;
+  display_order?: number;
+  resume_id: number;
+}
+
+export interface GrowthHighlightDto {
+  id: number;
+  resume_id: number;
+  highlight_text: string;
+  display_order: number;
+  created_at: string;
+}
+
+export interface ReferenceDto {
+  id: number;
+  name_prefix?: "Mr" | "Mrs" | "Ms";
+  name: string;
+  position?: string;
+  company?: string;
+  email?: string;
+  skype?: string;
+  phone?: string;
   resume_id: number;
 }
 
@@ -138,6 +140,7 @@ export interface ResumeDto {
   id: number;
   firstName: string;
   lastName: string;
+  birthday: string;
   age?: number;
   contacts: ContactDto[];
   languages?: LanguageDto[];
@@ -145,4 +148,7 @@ export interface ResumeDto {
   education: EducationDto[];
   experience: ExperienceDto[];
   certificates?: CertificateDto[];
+  growth_highlights?: GrowthHighlightDto[];
+  soft_skills: SkillDto[];
+  references: ReferenceDto[];
 }

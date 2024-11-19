@@ -16,6 +16,9 @@ import { ExperienceService } from "./ExperienceService";
 import { CertificateService } from "./CertificateService";
 import { QueryBuilder } from "../helpers/QueryBuilder";
 import { DataHelper } from "../helpers/DataHelper";
+import { GrowthHighlightService } from "./GrowthHighlightService";
+import { SkillService } from "./SkillService";
+import { ReferenceService } from "./ReferenceService";
 
 export class ResumeService {
   private static selectQuery = () => "SELECT * FROM Resume LIMIT 1";
@@ -59,14 +62,14 @@ export class ResumeService {
       id: experience_id,
     });
 
-    private static deleteResumeContactQuery = (
-      resume_id: number,
-      contact_id: number
-    ) =>
-      QueryBuilder.getDeleteRecordScript("Contact", {
-        resume_id: resume_id,
-        id: contact_id,
-      });
+  private static deleteResumeContactQuery = (
+    resume_id: number,
+    contact_id: number
+  ) =>
+    QueryBuilder.getDeleteRecordScript("Contact", {
+      resume_id: resume_id,
+      id: contact_id,
+    });
 
   public static async getResume(): Promise<ResumeDto> {
     const db = await SQLite.open(databaseOptions.db);
@@ -79,6 +82,9 @@ export class ResumeService {
     resume.certificates = await CertificateService.getResumeCertificates(
       resume.id
     );
+    resume.growth_highlights = await GrowthHighlightService.getResumeGrowthHighlights(resume.id);
+    resume.soft_skills = await SkillService.getSoftSkillsForResume(resume.id);
+    resume.references = await ReferenceService.getResumeReferences(resume.id);
     return resume;
   }
 
@@ -130,10 +136,10 @@ export class ResumeService {
       await db.execute(
         this.deleteResumeCertificateQuery(res_resume?.[0].id, certificate.id)
       );
-    }    
+    }
     for (const certificate of resume.certificates as CertificateDto[]) {
       await CertificateService.saveCertificate(certificate);
-    }    
+    }
 
     // Update info about positions
     const res_allPositions = await PositionService.getResumePositions(
@@ -166,7 +172,7 @@ export class ResumeService {
     for (const contact of resume.contacts as ContactDto[]) {
       await ContactService.saveContact(contact);
     }
-    
+
     return this.getResume();
   }
 }

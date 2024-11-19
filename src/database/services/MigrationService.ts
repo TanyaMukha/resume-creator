@@ -45,6 +45,7 @@ export class MigrationService {
       console.error(e);
       await this.createTable();
     }
+    await db.execute("PRAGMA foreign_keys = 0");
     for (let i = 0; i < databaseMigrations.length; i++) {
       if (
         !migrations.find((item) => item.name === databaseMigrations[i].name)
@@ -62,5 +63,6 @@ export class MigrationService {
         }
       }
     }
+    await db.execute("PRAGMA foreign_keys = 1");
   }
 }
