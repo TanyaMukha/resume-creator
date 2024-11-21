@@ -17,7 +17,7 @@ function App() {
 
   useEffect(() => {
     ResumeService.getResume().then((res: ResumeDto) => {
-      console.log(res);
+      console.log("get", res);
       setSchemaValues(res);
       resumeValidationSchema.setValues(res);
     });
@@ -25,8 +25,9 @@ function App() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDataSubmit = (values: any) => {
+    console.log("values", values);
     ResumeService.saveResume(values).then((res: ResumeDto) => {
-      console.log(res);
+      console.log("set", res);
       setSchemaValues(res);
       resumeValidationSchema.setValues(res);
     });

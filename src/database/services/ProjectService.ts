@@ -117,17 +117,6 @@ export class ProjectService {
     }
 
     // Update Skills
-    let res_newSkill: SkillDto | undefined;
-    for (const skill of project.hard_skills.filter((i) => i.id === 0)) {
-      try {
-        res_newSkill = await SkillService.saveSkill(skill);
-      } catch {
-        const res = await SkillService.getSkillByValue("title", skill.title);
-        res_newSkill = res.length > 0 ? res[0] : undefined;
-      }
-      if (res_newSkill)
-        await this.addSkillToProject(res_newSkill.id, res_project[0].id);
-    }
     const res_allProjectSkills = await this.getProjectSkills(project.id);
     for (const skill of DataHelper.getUniqueElementsById(
       res_allProjectSkills,
@@ -139,6 +128,25 @@ export class ProjectService {
           skill_id: skill.id,
         })
       );
+    }
+
+    let res_newSkill: SkillDto | undefined;
+    for (const skill of project.hard_skills.filter((i) => i.id === 0)) {
+      try {
+        res_newSkill = await SkillService.saveSkill(skill);
+      } catch {
+        const res = await SkillService.getSkillByValue("title", skill.title);
+        res_newSkill = res.length > 0 ? res[0] : undefined;
+      }
+      if (res_newSkill)
+        await this.addSkillToProject(res_newSkill.id, res_project[0].id);
+    }
+
+    for (const skill of DataHelper.getUniqueElementsById(
+      project.hard_skills.filter((i) => i.id !== 0),
+      res_allProjectSkills
+    )) {
+      await this.addSkillToProject(skill.id, res_project[0].id);
     }
 
     return res_project?.[0];

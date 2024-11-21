@@ -139,17 +139,6 @@ export class ExperienceService {
     }
 
     // Update Skills
-    let res_newSkill: SkillDto | undefined;
-    for (const skill of experience.hard_skills.filter((i) => i.id === 0)) {
-      try {
-        res_newSkill = await SkillService.saveSkill(skill);
-      } catch {
-        const res = await SkillService.getSkillByValue("title", skill.title);
-        res_newSkill = res.length > 0 ? res[0] : undefined;
-      }
-      if (res_newSkill)
-        await this.addSkillToExperience(res_newSkill.id, res_experience[0].id);
-    }
     const res_allExperienceSkills = await this.getExperienceSkills(
       experience.id
     );
@@ -163,6 +152,25 @@ export class ExperienceService {
           skill_id: skill.id,
         })
       );
+    }
+
+    let res_newSkill: SkillDto | undefined;
+    for (const skill of experience.hard_skills.filter((i) => i.id === 0)) {
+      try {
+        res_newSkill = await SkillService.saveSkill(skill);
+      } catch {
+        const res = await SkillService.getSkillByValue("title", skill.title);
+        res_newSkill = res.length > 0 ? res[0] : undefined;
+      }
+      if (res_newSkill)
+        await this.addSkillToExperience(res_newSkill.id, res_experience[0].id);
+    }
+
+    for (const skill of DataHelper.getUniqueElementsById(
+      experience.hard_skills.filter((i) => i.id !== 0),
+      res_allExperienceSkills
+    )) {
+      await this.addSkillToExperience(skill.id, res_experience[0].id);
     }
 
     // Update projects

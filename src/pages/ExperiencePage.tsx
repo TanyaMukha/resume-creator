@@ -1,44 +1,19 @@
-import React, { FC, useState } from "react";
+import { FC } from "react";
 import {
   Box,
   Paper,
   Typography,
-  TextField,
   Button,
-  Grid,
-  IconButton,
-  Stack,
-  MenuItem,
-  Card,
-  CardContent,
-  Tooltip,
-  Divider,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Chip,
 } from "@mui/material";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
-import dayjs, { Dayjs } from "dayjs";
 import {
   Add as AddIcon,
-  Delete as DeleteIcon,
   Save as SaveIcon,
   Work as WorkIcon,
-  ExpandMore as ExpandMoreIcon,
-  BusinessCenter as BusinessCenterIcon,
-  Assignment as AssignmentIcon,
-  EmojiEvents as EmojiEventsIcon,
 } from "@mui/icons-material";
 import {
-  ExperienceDeliverableDto,
   ExperienceDto,
-  ProjectDeliverableDto,
-  ProjectDto,
 } from "../database/models/Dto";
 import { ExperienceForm } from "./forms/ExperienceForm";
-import { FormikProps } from "formik";
 
 interface ExperiencePageProps {
   experiences: ExperienceDto[];

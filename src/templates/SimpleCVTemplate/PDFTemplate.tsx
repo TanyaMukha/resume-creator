@@ -1,166 +1,43 @@
 import { Document, Link, Page, Text, View } from "@react-pdf/renderer";
 import { styles } from "./styles";
-import { ResumeDto, SkillDto, ProjectDto } from "../../database/models/Dto";
+import { PositionDto, ResumeDto } from "../../database/models/Dto";
 import { ContactType } from "../../database/models/enums";
 import { useSkillGroups } from "../../hooks/useSkillGroups";
+import {
+  capitalizeFirstLetter,
+  getSkillsByGroup,
+  getYearRange,
+} from "./helper";
+import { ContactItem } from "./ContactItem";
 
 interface PDFTemplateProps {
-  data: ResumeDto;
+  resume: ResumeDto;
+  position: PositionDto;
 }
 
-const ContactItem = ({ type, value }: { type: ContactType; value: string }) => {
-  const getContactElement = () => {
-    switch (type) {
-      case ContactType.Email:
-        return (
-          <Link src={`mailto:${value}`}>
-            <Text style={styles.contactLink}>{value}</Text>
-          </Link>
-        );
-      case ContactType.Phone:
-        return (
-          <Link src={`tel:${value}`}>
-            <Text style={styles.contactLink}>{value}</Text>
-          </Link>
-        );
-      case ContactType.LinkedIn:
-        return (
-          <Link src={value}>
-            <Text style={styles.contactLink}>LinkedIn</Text>
-          </Link>
-        );
-      case ContactType.GitHub:
-        return (
-          <Link src={value}>
-            <Text style={styles.contactLink}>GitHub</Text>
-          </Link>
-        );
-      case ContactType.Portfolio:
-        return (
-          <Link src={value}>
-            <Text style={styles.contactLink}>Portfolio</Text>
-          </Link>
-        );
-      case ContactType.Location:
-        return <Text style={styles.contactText}>{value}</Text>;
-      default:
-        return <Text style={styles.contactText}>{value}</Text>;
-    }
-  };
-
-  return <View style={styles.contactItem}>{getContactElement()}</View>;
-};
-
-const getYearRange = (projects: ProjectDto[]) => {
-  if (!projects.length) return "";
-
-  const years = projects
-    .map((p) => {
-      const startYear = parseInt(p.start.split(".")[1]);
-      const finishYear = p.finish
-        ? parseInt(p.finish.split(".")[1])
-        : new Date().getFullYear();
-      return [startYear, finishYear];
-    })
-    .flat();
-
-  const minYear = Math.min(...years);
-  const maxYear = Math.max(...years);
-
-  return minYear === maxYear ? minYear : `${minYear}-${maxYear}`;
-};
-
-const capitalizeFirstLetter = (str: string) => {
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-};
-
-// PDF Template component
-export const PDFTemplate = ({ data }: PDFTemplateProps): JSX.Element => {
-  const defaultData = {
-    firstName: data?.firstName || "",
-    lastName: data?.lastName || "",
-    positions: data?.positions || [],
-    contacts: data?.contacts || [],
-    experience: data?.experience || [],
-    education: data?.education || [],
-    languages: data?.languages || [],
-    soft_skills: data?.soft_skills || [],
-    growth_highlights: data?.growth_highlights || [],
-    references: data?.references || [],
-    certificates: data?.certificates || [],
-  };
-
-  const currentPosition = defaultData.positions[0] || {
-    title: "Front-End Developer",
-    skills: [],
-    summary: "",
-  };
-
+export const PDFTemplate = ({
+  resume,
+  position,
+}: PDFTemplateProps): JSX.Element => {
   const skillGroups = useSkillGroups();
 
-  // Группируем скиллы
-  const groupedSkills: { [key: string]: SkillDto[] } = {
-    Other: [],
+  const data = {
+    firstName: resume?.firstName || "",
+    lastName: resume?.lastName || "",
+    contacts: resume?.contacts || [],
+    position: position || {
+      title: "",
+      summary: "",
+    },
+    hard_skills: getSkillsByGroup(skillGroups, position?.hard_skills || []),
+    experience: resume?.experience || [],
+    education: resume?.education || [],
+    languages: resume?.languages || [],
+    soft_skills: getSkillsByGroup(skillGroups, resume?.soft_skills || []),
+    growth_highlights: resume?.growth_highlights || [],
+    references: resume?.references || [],
+    certificates: resume?.certificates || [],
   };
-
-  // Создаем начальные группы
-  skillGroups.forEach((group) => {
-    groupedSkills[group.title] = [];
-  });
-
-  // Распределяем скиллы по группам
-  currentPosition.hard_skills?.forEach((skill) => {
-    const group = skillGroups.find((g) => g.id === skill.group_id);
-    if (group) {
-      groupedSkills[group.title].push(skill);
-    } else {
-      groupedSkills.Other.push(skill);
-    }
-  });
-
-  // Удаляем пустые группы (кроме Other)
-  Object.keys(groupedSkills).forEach((key) => {
-    if (groupedSkills[key].length === 0 && key !== "Other") {
-      delete groupedSkills[key];
-    }
-  });
-
-  // Если в Other нет скиллов, удаляем и её
-  if (groupedSkills.Other.length === 0) {
-    delete groupedSkills.Other;
-  }
-
-  // Группировка софт скиллов
-  const groupedSoftSkills: { [key: string]: SkillDto[] } = {
-    Other: [],
-  };
-
-  // Создаем начальные группы из существующих групп
-  skillGroups.forEach((group) => {
-    groupedSoftSkills[group.title] = [];
-  });
-
-  // Распределяем скиллы по группам
-  defaultData.soft_skills.forEach((skill) => {
-    const group = skillGroups.find((g) => g.id === skill.group_id);
-    if (group) {
-      groupedSoftSkills[group.title].push(skill);
-    } else {
-      groupedSoftSkills.Other.push(skill);
-    }
-  });
-
-  // Удаляем пустые группы (кроме Other)
-  Object.keys(groupedSoftSkills).forEach((key) => {
-    if (groupedSoftSkills[key].length === 0 && key !== "Other") {
-      delete groupedSoftSkills[key];
-    }
-  });
-
-  // Если в Other нет скиллов, удаляем и её
-  if (groupedSoftSkills.Other.length === 0) {
-    delete groupedSoftSkills.Other;
-  }
 
   return (
     <Document>
@@ -168,28 +45,28 @@ export const PDFTemplate = ({ data }: PDFTemplateProps): JSX.Element => {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.name}>
-            {`${defaultData.firstName} ${defaultData.lastName}`}
+            {`${data.firstName} ${data.lastName}`}
           </Text>
-          <Text style={styles.position}>{currentPosition.title}</Text>
+          <Text style={styles.position}>{data.position.title}</Text>
         </View>
         <View style={styles.twoColumns}>
           {/* Left Column */}
           <View style={styles.leftColumn}>
             {/* Career Objective */}
-            {currentPosition.objective && (
+            {data.position.objective && (
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Career Objective</Text>
                 <Text style={styles.bulletPoint}>
-                  {currentPosition.objective}
+                  {data.position.objective}
                 </Text>
               </View>
             )}
 
             {/* Work Experience */}
-            {defaultData.experience.length > 0 && (
+            {data.experience.length > 0 && (
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>PROFESSIONAL EXPERIENCE</Text>
-                {defaultData.experience
+                {data.experience
                   .sort(
                     (a, b) =>
                       new Date(b.start).getTime() - new Date(a.start).getTime()
@@ -342,12 +219,12 @@ export const PDFTemplate = ({ data }: PDFTemplateProps): JSX.Element => {
             )}
 
             {/* Certificates & Courses Section */}
-            {defaultData.certificates?.length > 0 && (
+            {data.certificates?.length > 0 && (
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>
                   CERTIFICATIONS & COURSES
                 </Text>
-                {defaultData.certificates
+                {data.certificates
                   .sort((a, b) => b.start - a.start) // Сортировка по году, новые первыми
                   .map((cert, index) => (
                     <View key={index} style={styles.certificateBlock}>
@@ -391,12 +268,12 @@ export const PDFTemplate = ({ data }: PDFTemplateProps): JSX.Element => {
             )}
 
             {/* Professional Growth Highlights */}
-            {defaultData.growth_highlights?.length > 0 && (
+            {data.growth_highlights?.length > 0 && (
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>
                   PROFESSIONAL GROWTH HIGHLIGHTS
                 </Text>
-                {defaultData.growth_highlights
+                {data.growth_highlights
                   .sort((a, b) => a.display_order - b.display_order)
                   .map((highlight, index) => (
                     <Text key={index} style={styles.highlightItem}>
@@ -413,7 +290,7 @@ export const PDFTemplate = ({ data }: PDFTemplateProps): JSX.Element => {
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Contact</Text>
               <View>
-                {defaultData.contacts
+                {data.contacts
                   .sort(
                     (a, b) => (a?.display_order || 0) - (b?.display_order || 0)
                   )
@@ -432,10 +309,10 @@ export const PDFTemplate = ({ data }: PDFTemplateProps): JSX.Element => {
             </View>
 
             {/* Education section */}
-            {defaultData.education.length > 0 && (
+            {data.education.length > 0 && (
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Education</Text>
-                {defaultData.education.map(
+                {data.education.map(
                   (edu, index) =>
                     edu && (
                       <View key={index} style={styles.educationItem}>
@@ -474,9 +351,9 @@ export const PDFTemplate = ({ data }: PDFTemplateProps): JSX.Element => {
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Hard Skills</Text>
 
-              {Object.keys(groupedSkills).length > 0 && (
+              {Object.keys(data.hard_skills).length > 0 && (
                 <View style={styles.skillsSection}>
-                  {Object.entries(groupedSkills)
+                  {Object.entries(data.hard_skills)
                     .filter(([_, skills]) => skills.length > 0)
                     .sort(([groupA], [groupB]) => {
                       // Other всегда последняя
@@ -519,9 +396,9 @@ export const PDFTemplate = ({ data }: PDFTemplateProps): JSX.Element => {
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Soft Skills</Text>
 
-              {Object.keys(groupedSoftSkills).length > 0 && (
+              {Object.keys(data.soft_skills).length > 0 && (
                 <View style={styles.skillsSection}>
-                  {Object.entries(groupedSoftSkills)
+                  {Object.entries(data.soft_skills)
                     .filter(([_, skills]) => skills.length > 0)
                     .sort(([groupA], [groupB]) => {
                       // Other всегда последняя
@@ -564,9 +441,9 @@ export const PDFTemplate = ({ data }: PDFTemplateProps): JSX.Element => {
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Languages</Text>
 
-              {defaultData.languages.length > 0 && (
+              {data.languages.length > 0 && (
                 <View style={styles.skillsSection}>
-                  {defaultData.languages.map(
+                  {data.languages.map(
                     (lang, index) =>
                       lang && (
                         <Text key={index} style={styles.languageItem}>
@@ -579,11 +456,11 @@ export const PDFTemplate = ({ data }: PDFTemplateProps): JSX.Element => {
             </View>
 
             {/* References section */}
-            {defaultData.references?.length > 0 && (
+            {data.references?.length > 0 && (
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>References</Text>
                 <View style={styles.referencesSection}>
-                  {defaultData.references.map((reference, index) => (
+                  {data.references.map((reference, index) => (
                     <View key={index} style={styles.referenceItem}>
                       {/* Name with prefix */}
                       <Text style={styles.referenceName}>

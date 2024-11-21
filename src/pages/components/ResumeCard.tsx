@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Card,
@@ -28,17 +28,18 @@ import {
 import { BlobProvider } from "@react-pdf/renderer";
 import { PDFViewer } from "@react-pdf/renderer";
 import { PositionDto, ResumeDto } from "../../database/models/Dto";
-import { ResumeService } from "../../database/services/ResumeService";
-import { PDFTemplate } from "../../templates/SimpleCVTermplate/PDFTemplate";
+import { PDFTemplate } from "../../templates/SimpleCVTemplate/PDFTemplate";
 
 interface ResumeCardProps {
   position: PositionDto;
+  resume: ResumeDto;
   onDelete: (id: number) => void;
   onEdit: (position: PositionDto) => void;
 }
 
 export const ResumeCard: React.FC<ResumeCardProps> = ({
   position,
+  resume,
   onDelete,
   onEdit,
 }) => {
@@ -82,12 +83,6 @@ export const ResumeCard: React.FC<ResumeCardProps> = ({
     setPreviewOpen(false);
   };
 
-  const [resume, setResume] = useState<ResumeDto>({} as ResumeDto);
-
-  useEffect(() => {
-    ResumeService.getResume().then((res) => setResume(res));
-  }, []);
-
   return (
     <>
       <Card
@@ -114,27 +109,37 @@ export const ResumeCard: React.FC<ResumeCardProps> = ({
               <Typography variant="h6" component="h2" gutterBottom>
                 {position.title}
               </Typography>
-              <Typography
-                variant="subtitle1"
-                color="primary"
-                sx={{ display: "flex", alignItems: "center", gap: 1 }}
-              >
-                <WorkIcon sx={{ fontSize: 20 }} />$
-                {position.salary?.toLocaleString()}
-              </Typography>
+              {!!position.salary && (
+                <Typography
+                  variant="subtitle1"
+                  color="primary"
+                  sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                >
+                  <WorkIcon sx={{ fontSize: 20 }} />$
+                  {position.salary?.toLocaleString()}
+                </Typography>
+              )}
             </Box>
             <IconButton onClick={handleClick}>
               <MoreVertIcon />
             </IconButton>
           </Box>
 
+          <Typography
+            variant="body1"
+            component="h3"
+            fontWeight="bold"
+            gutterBottom
+          >
+            Professional Summary
+          </Typography>
           {position.summary && (
             <Typography
               color="text.secondary"
               sx={{
                 mb: 2,
                 display: "-webkit-box",
-                WebkitLineClamp: 2,
+                // WebkitLineClamp: 2,
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -144,11 +149,35 @@ export const ResumeCard: React.FC<ResumeCardProps> = ({
             </Typography>
           )}
 
+          <Typography
+            variant="body1"
+            component="h3"
+            fontWeight="bold"
+            gutterBottom
+          >
+            Career Objective
+          </Typography>
+          {position.objective && (
+            <Typography
+              color="text.secondary"
+              sx={{
+                mb: 2,
+                display: "-webkit-box",
+                // WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {position.objective}
+            </Typography>
+          )}
+
           {position.hard_skills && position.hard_skills.length > 0 && (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
               {position.hard_skills
                 .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
-                .slice(0, 3)
+                // .slice(0, 3)
                 .map((skill) => (
                   <Chip
                     key={skill.id}
@@ -158,13 +187,13 @@ export const ResumeCard: React.FC<ResumeCardProps> = ({
                     variant="outlined"
                   />
                 ))}
-              {position.hard_skills.length > 3 && (
+              {/* {position.hard_skills.length > 3 && (
                 <Chip
                   label={`+${position.hard_skills.length - 3}`}
                   size="small"
                   variant="outlined"
                 />
-              )}
+              )} */}
             </Box>
           )}
         </CardContent>
@@ -177,7 +206,9 @@ export const ResumeCard: React.FC<ResumeCardProps> = ({
           >
             Edit
           </Button>
-          <BlobProvider document={<PDFTemplate data={resume} />}>
+          <BlobProvider
+            document={<PDFTemplate resume={resume} position={position} />}
+          >
             {({ url, loading, error }) => (
               <Button
                 size="small"
@@ -209,7 +240,9 @@ export const ResumeCard: React.FC<ResumeCardProps> = ({
             <FileCopyIcon sx={{ mr: 1 }} /> Make a copy
           </MenuItem>
           <MenuItem>
-            <BlobProvider document={<PDFTemplate data={resume} />}>
+            <BlobProvider
+              document={<PDFTemplate resume={resume} position={position} />}
+            >
               {({ url, loading, error }) => (
                 <Link
                   href={url || ""}
@@ -247,7 +280,9 @@ export const ResumeCard: React.FC<ResumeCardProps> = ({
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
               Preview Resume
             </Typography>
-            <BlobProvider document={<PDFTemplate data={resume} />}>
+            <BlobProvider
+              document={<PDFTemplate resume={resume} position={position} />}
+            >
               {({ url, loading, error }) => (
                 <Link
                   href={url || ""}
@@ -296,7 +331,7 @@ export const ResumeCard: React.FC<ResumeCardProps> = ({
                 border: "none",
               }}
             >
-              <PDFTemplate data={resume} />
+              <PDFTemplate resume={resume} position={position} />
             </PDFViewer>
           </Box>
         </Box>

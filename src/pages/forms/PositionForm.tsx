@@ -42,10 +42,12 @@ export const PositionForm: React.FC<PositionFormProps> = ({
 
   const hardSkills = useHardSkills();
 
+  console.log(hardSkills);
+
   const { handleGetNewPositionSkills } = usePositionSkills(
     positionIndex,
     hardSkills,
-    position ?? ({} as PositionDto),
+    draftPosition ?? ({} as PositionDto),
     onChange
   );
 
@@ -57,9 +59,10 @@ export const PositionForm: React.FC<PositionFormProps> = ({
   };
 
   const handleSkillsChange = (newSkills: (SkillDto | string)[]) => {
+    console.log("!!!!!!!!!!", handleGetNewPositionSkills(newSkills));
     setDraftPosition((prev) => ({
       ...prev,
-      skills: handleGetNewPositionSkills(newSkills),
+      hard_skills: handleGetNewPositionSkills(newSkills),
     }));
   };
 
@@ -73,7 +76,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
   };
 
   useEffect(() => {
-    console.log(draftPosition);
+    console.log("draftPosition", draftPosition);
   }, [draftPosition]);
 
   return (
@@ -180,7 +183,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
                 onClick={() => onSave(draftPosition)}
                 disabled={isLoading}
               >
-                {isLoading ? "Saving..." : "Save Changes"}
+                {isLoading ? "Saving..." : "Apply Changes"}
               </Button>
             </Box>
           </Grid>

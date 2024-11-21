@@ -17,6 +17,7 @@ import { LanguageForm } from "./forms/LanguageForm";
 import { ContactForm } from "./forms/ContactForm";
 import { ContactType } from "../database/models/enums";
 import dayjs from "dayjs";
+import { GrowthHighlightsSection } from "./components/GrowthHighlightsSection";
 
 interface PersonalInfoPageProps {
   schema: FormikProps<any>;
@@ -126,8 +127,8 @@ export const PersonalInfoPage: FC<PersonalInfoPageProps> = ({
               <DatePicker
                 label="Birth Date"
                 value={
-                  dayjs(schema.values.birthDate, dateFormat).isValid()
-                    ? dayjs(schema.values.birthDate, dateFormat)
+                  dayjs(schema.values.birthday, dateFormat).isValid()
+                    ? dayjs(schema.values.birthday, dateFormat)
                     : null
                 }
                 onChange={(e) => onChange("birthday", e?.format(dateFormat))}
@@ -228,6 +229,8 @@ export const PersonalInfoPage: FC<PersonalInfoPageProps> = ({
           )}
         </Stack>
       </Paper>
+
+      {/* <GrowthHighlightsSection /> */}
     </Box>
   );
 };

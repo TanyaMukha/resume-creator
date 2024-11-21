@@ -172,7 +172,7 @@ export class ResumeService {
     for (const contact of resume.contacts as ContactDto[]) {
       await ContactService.saveContact(contact);
     }
-
+    console.log("saved");
     return this.getResume();
   }
 }

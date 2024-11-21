@@ -15,7 +15,7 @@ dist-ssr
 *.lock
 private
 resume.db
-resume-copy.db
+resume_copy.db
 
 # Editor directories and files
 .vscode/*

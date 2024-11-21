@@ -21,7 +21,7 @@ export const useExperienceSkills = (
       setUpdatedSkills(updatedSkills);
 
       onChange(
-        `experience[${experienceIndex}].skills`,
+        `experience[${experienceIndex}].hard_skills`,
         updatedSkills
       );
     },

@@ -22,7 +22,7 @@ export const useProjectSkills = (
       setUpdatedSkills(updatedSkills);
 
       onChange(
-        `experience[${experienceIndex}].projects[${projectIndex}].skills`,
+        `experience[${experienceIndex}].projects[${projectIndex}].hard_skills`,
         updatedSkills
       );
     },

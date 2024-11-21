@@ -65,6 +65,13 @@ export class PositionService {
     position_id: number
   ) {
     const db = await SQLite.open(databaseOptions.db);
+    console.log(
+      this.insertPositionSkillQuery({
+        id: 0,
+        skill_id: skill_id,
+        position_id: position_id,
+      })
+    );
     await db.execute(
       this.insertPositionSkillQuery({
         id: 0,
@@ -87,17 +94,6 @@ export class PositionService {
     );
 
     // Update Skills
-    let res_newSkill: SkillDto | undefined;
-    for (const skill of position.hard_skills.filter((i) => i.id === 0)) {
-      try {
-        res_newSkill = await SkillService.saveSkill(skill);
-      } catch {
-        const res = await SkillService.getSkillByValue("title", skill.title);
-        res_newSkill = res.length > 0 ? res[0] : undefined;
-      }
-      if (res_newSkill)
-        await this.addSkillToPosition(res_newSkill.id, res_position[0].id);
-    }
     const res_allPositionSkills = await this.getPositionSkills(position.id);
     for (const skill of DataHelper.getUniqueElementsById(
       res_allPositionSkills,
@@ -109,6 +105,27 @@ export class PositionService {
           skill_id: skill.id,
         })
       );
+    }
+    
+    let res_newSkill: SkillDto | undefined;
+    for (const skill of position.hard_skills.filter((i) => i.id === 0)) {
+      try {
+        res_newSkill = await SkillService.saveSkill(skill);
+      } catch {
+        const res = await SkillService.getSkillByValue("title", skill.title);
+        res_newSkill = res.length > 0 ? res[0] : undefined;
+      }
+      if (res_newSkill) {
+        console.log("add skill", res_newSkill);
+        await this.addSkillToPosition(res_newSkill.id, res_position[0].id);
+      }
+    }
+    
+    for (const skill of DataHelper.getUniqueElementsById(
+      position.hard_skills.filter((i) => i.id !== 0),
+      res_allPositionSkills
+    )) {
+      await this.addSkillToPosition(skill.id, res_position[0].id);
     }
 
     return res_position?.[0];

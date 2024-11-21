@@ -13,7 +13,11 @@ import {
   Fade,
   Backdrop,
 } from "@mui/material";
-import { Search as SearchIcon, Add as AddIcon } from "@mui/icons-material";
+import {
+  Search as SearchIcon,
+  Add as AddIcon,
+  Save as SaveIcon,
+} from "@mui/icons-material";
 import { PositionDto } from "../database/models/Dto";
 import { PositionForm } from "./forms/PositionForm";
 import { FormikProps } from "formik";
@@ -43,6 +47,7 @@ export const HomePage: FC<HomePageProps> = ({
     number | null
   >(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const { handleAddPosition, handleDeletePosition, handleUpdatePosition } =
     useResumePositions({
@@ -98,13 +103,16 @@ export const HomePage: FC<HomePageProps> = ({
   };
 
   const handleSavePosition = (updatedPosition: PositionDto) => {
+    console.log("editingPositionIndex", editingPositionIndex);
     if (editingPositionIndex !== null) {
       handleUpdatePosition(updatedPosition, editingPositionIndex);
-      console.log("save", updatedPosition, editingPositionIndex);
     }
-    // onSave();
     handleCloseModal();
   };
+
+  useEffect(() => {
+    console.log("schema.values", schema.values);
+  }, [schema.values]);
 
   return (
     <Box sx={{ p: 3 }}>
@@ -123,6 +131,9 @@ export const HomePage: FC<HomePageProps> = ({
           My Resumes
         </Typography>
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+          <Button variant="contained" startIcon={<SaveIcon />} onClick={onSave}>
+            Save Changes
+          </Button>
           <TextField
             size="small"
             placeholder="Search by title, description or skills..."
@@ -161,16 +172,10 @@ export const HomePage: FC<HomePageProps> = ({
           <Grid container spacing={3}>
             {filteredPositions.map(
               (item: { position: PositionDto; positionIndex: number }) => (
-                <Grid
-                  item
-                  xs={12}
-                  sm={12}
-                  md={6}
-                  lg={4}
-                  key={item.positionIndex}
-                >
+                <Grid item xs={12} xl={6} key={item.positionIndex}>
                   <ResumeCard
                     position={item.position}
+                    resume={schema.values}
                     onDelete={handleDeletePosition}
                     onEdit={(e: PositionDto) =>
                       handleEdit(e, item.positionIndex)

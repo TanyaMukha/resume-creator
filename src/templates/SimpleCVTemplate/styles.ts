@@ -1,7 +1,7 @@
-// styles.ts
 import { StyleSheet } from "@react-pdf/renderer";
 
 export const styles = StyleSheet.create({
+  // Layout
   page: {
     flexDirection: "column" as const,
     backgroundColor: "#ffffff",
@@ -20,6 +20,36 @@ export const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: 0,
   },
+
+  // Common
+  section: {
+    marginBottom: 15,
+    minHeight: 40,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "bold",
+    borderBottomWidth: 1,
+    borderBottomColor: "#000000",
+    paddingBottom: 3,
+    marginBottom: 10,
+    textTransform: "uppercase" as const,
+  },
+  bulletPoint: {
+    fontSize: 10,
+    marginBottom: 3,
+  },
+  subitem: {
+    marginLeft: 15,
+    fontSize: 10,
+    marginBottom: 3,
+  },
+  contentWrapper: {
+    display: "flex",
+    flexDirection: "column",
+  },
+
+  // Header
   header: {
     marginBottom: 20,
   },
@@ -32,6 +62,8 @@ export const styles = StyleSheet.create({
     color: "#8B0000",
     marginTop: 5,
   },
+
+  // Contacts
   contactRow: {
     flexDirection: "row" as const,
     marginTop: 10,
@@ -53,18 +85,18 @@ export const styles = StyleSheet.create({
     color: "#0077B5",
     textDecoration: "none",
   },
-  section: {
+
+  // Experience
+  experienceBlock: {
     marginBottom: 15,
     minHeight: 40,
   },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: "bold",
-    borderBottomWidth: 1,
-    borderBottomColor: "#000000",
-    paddingBottom: 3,
-    marginBottom: 10,
-    textTransform: "uppercase" as const,
+  experienceHeader: {
+    marginBottom: 5,
+  },
+  experienceDescription: {
+    fontSize: 10,
+    marginBottom: 5,
   },
   jobTitle: {
     fontSize: 12,
@@ -82,19 +114,76 @@ export const styles = StyleSheet.create({
     marginTop: 2,
     marginBottom: 5,
   },
-  bulletPoint: {
-    // marginLeft: 15,
+
+  // Projects
+  projectBlock: {
+    marginLeft: 10,
+    minHeight: 40,
+    marginBottom: "12px",
+  },
+  projectTitle: {
+    fontSize: 11,
+    fontWeight: "bold",
+    marginBottom: 3,
+    color: "#8B0000",
+  },
+  projectDescription: {
     fontSize: 10,
     marginBottom: 3,
   },
-  subitem: {
-    marginLeft: 15,
+  projectTitleBold: {
+    fontWeight: "bold",
+  },
+  technologies: {
+    fontSize: 9,
+    fontStyle: "italic",
+    marginTop: 5,
+  },
+
+  // Other Projects
+  otherProjectsBlock: {
+    marginBottom: 8,
+    minHeight: 40,
+  },
+  otherProjectsTitle: {
+    fontSize: 11,
+    fontWeight: "bold",
+    marginBottom: 4,
+    color: "#8B0000",
+  },
+  otherProjectItemWrapper: {
+    flexDirection: "row",
+    marginLeft: 10,
+    marginBottom: 2,
+  },
+  otherProjectItem: {
     fontSize: 10,
+    flex: 1,
+  },
+  otherProjectsList: {
+    fontSize: 10,
+    marginLeft: 10,
+  },
+
+  // Deliverables
+  deliverableTitle: {
+    fontSize: 10,
+    fontWeight: "bold",
+    marginTop: 5,
     marginBottom: 3,
   },
+  deliverableItem: {
+    fontSize: 10,
+    marginLeft: 10,
+    marginBottom: 2,
+  },
+
+  // Education
   educationItem: {
     marginBottom: 10,
   },
+
+  // Skills
   skillsSection: {
     marginTop: 5,
   },
@@ -110,90 +199,21 @@ export const styles = StyleSheet.create({
     fontSize: 10,
     marginLeft: 15,
   },
+
+  // Languages
   languageItem: {
     fontSize: 10,
-    marginLeft: 15,
     marginBottom: 3,
   },
 
-  experienceBlock: {
-    marginBottom: 15,
-    minHeight: 40,
-  },
-  experienceHeader: {
-    marginBottom: 5,
-  },
-  experienceDescription: {
-    fontSize: 10,
-    marginBottom: 5,
-  },
-  projectTitle: {
-    fontSize: 11,
-    fontWeight: "bold",
-    marginBottom: 3,
-    color: "#8B0000",
-  },
-  projectDescription: {
-    fontSize: 10,
-    marginBottom: 3,
-  },
-  deliverableTitle: {
-    fontSize: 10,
-    fontWeight: "bold",
-    marginTop: 5,
-    marginBottom: 3,
-  },
-  deliverableItem: {
-    fontSize: 10,
-    marginLeft: 10,
-    marginBottom: 2,
-  },
-  technologies: {
-    fontSize: 9,
-    fontStyle: "italic",
-    marginTop: 5,
-  },
-  otherProjectsList: {
-    fontSize: 10,
-    marginLeft: 10,
-  },
+  // Highlights
   highlightItem: {
     fontSize: 10,
     marginLeft: 10,
     marginBottom: 3,
   },
-  otherProjectsBlock: {
-    marginTop: 8,
-    marginBottom: 8,
-    minHeight: 40,
-  },
-  otherProjectsTitle: {
-    fontSize: 11,
-    fontWeight: "bold",
-    marginBottom: 4,
-    color: "#8B0000",
-  },
-  projectBlock: {
-    marginLeft: 10,
-    minHeight: 40,
-  },
-  otherProjectItemWrapper: {
-    flexDirection: "row",
-    marginLeft: 10,
-    marginBottom: 2,
-  },
-  otherProjectItem: {
-    fontSize: 10,
-    flex: 1,
-  },
-  projectTitleBold: {
-    fontWeight: "bold",
-  },
-  contentWrapper: {
-    display: "flex",
-    flexDirection: "column",
-  },
 
+  // References
   referencesSection: {
     marginTop: 5,
   },
@@ -215,6 +235,7 @@ export const styles = StyleSheet.create({
     color: "#444444",
   },
 
+  // Certificates
   certificateBlock: {
     marginBottom: 8,
   },
@@ -224,7 +245,7 @@ export const styles = StyleSheet.create({
   certificateTitle: {
     fontSize: 11,
     fontWeight: "bold",
-    color: "#1a0dab", // Цвет для ссылок
+    color: "#1a0dab",
     textDecoration: "none",
   },
   certificateDetails: {

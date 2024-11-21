@@ -79,7 +79,7 @@ export class QueryBuilder {
   ): string => {
     const columns = Object.keys(data)
       .filter((key) => key !== idField)
-      .map((key) => `[${key}]`)
+      .map((key) => `${key}`)
       .join(", ");
 
     const values = Object.entries(data)

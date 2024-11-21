@@ -22,7 +22,7 @@ export const usePositionSkills = (
         skills
       );
 
-      onChange(`positions[${positionIndex}].skills`, updatedSkills);
+      onChange(`positions[${positionIndex}].hard_skills`, updatedSkills);
     },
     [positionIndex, skills, position, onChange]
   );
